@@ -1,0 +1,256 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  background: #151a2b;
+  color: #F2F5FF;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+h2, .card-title {
+  font-weight: 700;
+}
+
+h1 {
+  font-family: 'Michroma', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: clamp(1.5rem, 6vw, 3rem);
+}
+
+p {
+  overflow-wrap: break-word;
+}
+
+a {
+  color: #4DA3FF;
+}
+
+.center {
+  text-align: center;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  padding: 0.625rem 5%;
+}
+
+.rsvp {
+  background: hwb(335 12% 0%);
+  color: white;
+  border-radius: 0.25rem;
+  border-color: hwb(350 44% 2%);
+  appearance: none;
+  border: none;
+  box-shadow: none;
+  height: 2.5rem;
+  width: 6.25rem;
+}
+
+.title,
+.registration,
+.guide {
+  width: 90%;
+  max-width: 56.25rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.title {
+  border: 0.1875rem solid hwb(0 26% 74%);
+  border-radius: 0.9375rem;
+  padding: clamp(0.625rem, 2vw, 1.5625rem) clamp(1.25rem, 3vw, 2.1875rem);
+  margin-bottom: 1.25rem;
+  background: black;
+}
+
+.guide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin-top: 1.25rem;
+}
+
+.guide > div {
+  padding: clamp(0.9375rem, 2vw, 1.875rem);
+  min-width: 0;
+}
+
+.guide h2 {
+  font-size: clamp(1.25rem, 2vw, 1.875rem);
+}
+
+.guide p {
+  font-size: clamp(0.875rem, 1.3vw, 1.125rem);
+}
+
+.step1 {
+  border-radius: 0.9375rem;
+  background: hwb(329 44% 2%);
+  color: white;
+  padding: 0.625rem 1.25rem;
+}
+
+.step2 {
+  border-radius: 0.9375rem;
+  background: hwb(193 57% 2%);
+  color: lab(0% 0 0);
+  padding: 0.625rem 1.25rem;
+}
+
+.step3 {
+  border-radius: 0.9375rem;
+  background: hwb(137 3% 0%);
+  color: lab(0% 0 0);
+  padding: 0.625rem 1.25rem;
+}
+
+.signin {
+  background: hwb(204 19% 2%);
+  color: white;
+  border-color: white;
+  padding: 0.625rem;
+}
+
+.emailbox {
+  background: grey;
+  color: white;
+  border: solid 0.25rem;
+  border-color: darkgrey;
+  width: 75%;
+  max-width: 25rem;
+  height: 2.5rem;
+  min-width: 0;
+}
+
+.emailbox::placeholder {
+  color: white;
+  opacity: 0.5;
+}
+
+.registration {
+  margin-bottom: 2.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.registration p,
+.registration label {
+  width: 100%;
+  margin: 0;
+}
+
+footer {
+  margin-top: 5rem;
+  padding: clamp(1.875rem, 4vw, 2.5rem) 8%;
+  background: #111;
+  color: #fff;
+  border-top: 0.0625rem solid #333;
+}
+
+footer p {
+  margin: 0.5rem 0;
+  font-size: clamp(0.8125rem, 1vw, 0.875rem);
+  opacity: 0.7;
+}
+
+footer a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 0.625rem;
+}
+
+footer a:hover {
+  opacity: 0.7;
+}
+
+/* Tablets: cards wrap instead of squeezing */
+@media (min-width: 37.5em) {
+  .guide {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .guide > div {
+    flex: 1 1 15rem;
+  }
+}
+
+/* Desktop: 3 in a row */
+@media (min-width: 50em) {
+  .guide {
+    flex-wrap: nowrap;
+  }
+
+  .guide > div {
+    flex: 1;
+  }
+}
+
+/* Phones */
+@media (max-width: 31.25em) {
+  nav {
+    padding: 0.625rem 3%;
+  }
+
+  .title,
+  .registration,
+  .guide {
+    width: 94%;
+  }
+
+  .title {
+    padding: 0.625rem 0.9375rem;
+  }
+
+  .emailbox {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: none;
+  }
+
+  .rsvp {
+    width: 5.625rem;
+  }
+
+  footer {
+    padding: 1.875rem 5%;
+    margin-top: 3.125rem;
+  }
+
+  footer a {
+    display: inline-block;
+    margin: 0.25rem 0.5rem 0.25rem 0;
+  }
+}
+
+/* Very large screens */
+@media (min-width: 100em) {
+  .title,
+  .registration,
+  .guide {
+    max-width: 68.75rem;
+  }
+}
