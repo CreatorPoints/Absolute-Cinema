@@ -5,9 +5,8 @@
   })
   .then(response => {
     if (!response.ok) {
-      // If they aren't logged in, kick them back to the home page
-      window.location.href = "/";
-      throw new Error("Not logged in");
+  	window.location.href = "index.html"; // Kick them out to the main page
+  	throw new Error("Not logged in");
     }
     return response.json();
   })
