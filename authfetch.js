@@ -1,32 +1,34 @@
-// authfetch.js
 fetch("https://absolute-cinema-manager.hackclub.app/api/me", {
-  credentials: "include"
+  credentials: "include",
+  cache: "no-store" 
 })
 .then(response => {
-  // Check if they are on the root homepage or index.html
-  const isHomePage = window.location.pathname === "/" || window.location.pathname.endsWith("index.html");
+  // Check if the user is currently on the dashboard page
+  const isDashboard = window.location.pathname.includes("dashboard");
 
   if (!response.ok) {
-    // Only kick them back to the homepage if they are on the dashboard
-    if (!isHomePage) {
-      window.location.href = "/";
+    // If they are NOT logged in, AND trying to sneak into the dashboard, kick them to home
+    if (isDashboard) {
+      window.location.replace("/"); 
     }
-    throw new Error("No active session found.");
+    throw new Error("No active session.");
   }
-  
   return response.json();
 })
 .then(userData => {
   console.log("Welcome back:", userData.name);
   
-  const isHomePage = window.location.pathname === "/" || window.location.pathname.endsWith("index.html");
+  const isDashboard = window.location.pathname.includes("dashboard");
   
-  // If they ARE logged in but just sitting on the homepage, fast-track them to the dashboard 🏎️
-  if (isHomePage) {
-    window.location.href = "/dashboard.html";
+  // If they ARE logged in, but just sitting on the home page, fast-track them to the dashboard!
+  if (!isDashboard) {
+    window.location.replace("/dashboard.html");
   } else {
-    // If they are already on the dashboard, you can update the UI here!
-    // document.getElementById("username").innerText = userData.name;
+    
+    console.log("Welcome to Cinema Hall!");
+    
+    // Pro-tip: You can update your HTML here using their data!
+    document.getElementById("username").innerText = userData.name;
   }
 })
 .catch(error => console.log("Auth status:", error.message));
