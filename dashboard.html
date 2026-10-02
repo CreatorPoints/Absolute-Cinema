@@ -13,9 +13,10 @@
   <body>
     <nav>
       <a href="https://hackclub.com/"><img src="assets/hackclub.svg" alt="Hack Club" width="150" height="57"></a>
+      <button class="logout-btn" onclick="logoutCinema()">Log out</button>
     </nav>
     <div class="greet">
-      <h1>Welcome, </h1>
+      <h1>Welcome, <span id="username-display">...</span>!</h1>
     </div>
     <footer>
       <h1><b>Absolute Cinema</b></h1>
@@ -28,5 +29,6 @@
       <hr>
       <p>Fun fact: this was made (partly) on a mobile using termux and nano, then later on Acode 💀</p>
     </footer>
+    <script src="authfetch.js"></script>
   </body>
 </html>

@@ -48,22 +48,28 @@ if (!token) {
       window.location.replace("/dashboard.html");
     } else {
       console.log("Safely landed on the dashboard. Absolute Cinema is online.");
-      // UI Update Example:
-      // document.getElementById("username-display").innerText = userData.name;
+      const usernameEl = document.getElementById("username-display");
+      if (usernameEl) {
+        usernameEl.innerText = userData.name || userData.email || "Creator";
+      }
     }
   })
   .catch(error => console.error("Auth status:", error.message));
 }
 
 // BONUS: A global logout function you can attach to any button on your site
-window.logoutCinema = function() {
+window.logoutCinema = async function() {
   const currentToken = localStorage.getItem('cinema_session');
-  if (currentToken) {
-    fetch("https://absolute-cinema-manager.hackclub.app/logout", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${currentToken}` }
-    });
-  }
   localStorage.removeItem('cinema_session');
+  if (currentToken) {
+    try {
+      await fetch("https://absolute-cinema-manager.hackclub.app/logout", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${currentToken}` }
+      });
+    } catch (err) {
+      console.warn("Logout notification failed:", err.message);
+    }
+  }
   window.location.replace("/");
 };
