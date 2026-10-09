@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Film Showcase - Absolute Cinema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/dash.css">
+    <style>
+      .project-view-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 30px 20px 60px;
+      }
+      .back-nav {
+        margin-bottom: 25px;
+      }
+      .back-nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      .back-nav a:hover {
+        color: #4DA3FF;
+      }
+      .video-wrapper {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 ratio */
+        height: 0;
+        overflow: hidden;
+        border-radius: 14px;
+        background: #000;
+        border: 1px solid rgba(77, 163, 255, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(77, 163, 255, 0.15);
+        margin-bottom: 30px;
+      }
+      .video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+      .project-header {
+        margin-bottom: 20px;
+      }
+      .project-header h1 {
+        font-size: 32px;
+        color: #f8fafc;
+        margin: 0 0 10px 0;
+      }
+      .project-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+      .meta-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+      }
+      .badge-software {
+        background: rgba(77, 163, 255, 0.15);
+        color: #4DA3FF;
+        border: 1px solid rgba(77, 163, 255, 0.3);
+      }
+      .badge-hours {
+        background: rgba(234, 179, 8, 0.12);
+        color: #fef08a;
+        border: 1px solid rgba(234, 179, 8, 0.3);
+      }
+      .badge-status {
+        background: rgba(34, 197, 94, 0.12);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        text-transform: capitalize;
+      }
+      .badge-author {
+        background: rgba(255, 255, 255, 0.05);
+        color: #cbd5e1;
+      }
+      .project-card {
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 26px;
+        margin-bottom: 24px;
+      }
+      .project-card h2 {
+        font-size: 18px;
+        color: #4DA3FF;
+        margin-top: 0;
+        margin-bottom: 12px;
+      }
+      .project-notes {
+        color: #cbd5e1;
+        line-height: 1.6;
+        white-space: pre-wrap;
+      }
+      .project-actions {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 22px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+        border: none;
+      }
+      .btn-primary {
+        background: #3399dd;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #2581be;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(51, 153, 221, 0.4);
+      }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+      }
+      .state-box {
+        text-align: center;
+        padding: 80px 20px;
+        color: #94a3b8;
+      }
+      .state-box h2 {
+        color: #f8fafc;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Navigation -->
+    <nav>
+      <a href="https://hackclub.com/">
+        <img src="/assets/hackclub.svg" alt="Hack Club" width="140" height="53">
+      </a>
+      <a href="/dashboard.html" style="text-decoration: none;">
+        <button class="logout-btn" style="background: #3399dd;">Dashboard</button>
+      </a>
+    </nav>
+
+    <div class="project-view-container">
+      <div class="back-nav">
+        <a href="/dashboard.html">← Back to Dashboard</a>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading-state" class="state-box">
+        <h2>Loading film... 🎬</h2>
+        <p>Fetching project details from Absolute Cinema.</p>
+      </div>
+
+      <!-- Error / Not Found State -->
+      <div id="error-state" class="state-box" style="display: none;">
+        <h2>Film Not Found 📽️</h2>
+        <p id="error-message">This project UID could not be found or has been removed.</p>
+        <div style="margin-top: 20px;">
+          <a href="/dashboard.html" class="action-btn btn-primary">Return to Dashboard</a>
+        </div>
+      </div>
+
+      <!-- Main Project Content -->
+      <div id="project-content" style="display: none;">
+        <!-- Embedded Video -->
+        <div class="video-wrapper" id="video-container">
+          <iframe id="video-frame" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+        </div>
+
+        <div class="project-header">
+          <h1 id="project-title">Project Title</h1>
+          <div class="project-meta-row">
+            <span class="meta-badge badge-author" id="meta-author">👤 Creator</span>
+            <span class="meta-badge badge-software" id="meta-software">🛠️ Blender</span>
+            <span class="meta-badge badge-hours" id="meta-hours">⏱️ 0 hrs</span>
+            <span class="meta-badge badge-status" id="meta-status">Status: Submitted</span>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <h2>Behind the Scenes & Notes</h2>
+          <div class="project-notes" id="project-notes">No notes provided.</div>
+        </div>
+
+        <div class="project-actions">
+          <a id="timelapse-link" href="#" target="_blank" rel="noopener noreferrer" class="action-btn btn-primary">
+            👁️ View Timelapse Proof
+          </a>
+          <button id="share-btn" class="action-btn btn-secondary" onclick="copyProjectLink()">
+            🔗 Share Film Link
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <h1><b>Absolute Cinema</b></h1>
+      <p>A Hack Club YSWS</p>
+    </footer>
+
+    <script>
+      function extractYoutubeId(url) {
+        if (!url) return null;
+        try {
+          const parsed = new URL(url);
+          if (parsed.hostname.includes("youtu.be")) {
+            return parsed.pathname.replace(/^\//, "");
+          }
+          if (parsed.hostname.includes("youtube.com")) {
+            if (parsed.pathname.includes("/shorts/")) {
+              return parsed.pathname.split("/shorts/")[1];
+            }
+            if (parsed.pathname.includes("/embed/")) {
+              return parsed.pathname.split("/embed/")[1];
+            }
+            return parsed.searchParams.get("v");
+          }
+        } catch (e) {
+          const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+          return match ? match[1] : null;
+        }
+        return null;
+      }
+
+      function getUidFromUrl() {
+        const pathParts = window.location.pathname.split("/").filter(Boolean);
+        const projectsIdx = pathParts.indexOf("projects");
+        if (projectsIdx !== -1 && pathParts[projectsIdx + 1]) {
+          return pathParts[projectsIdx + 1];
+        }
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("uid") || urlParams.get("id");
+      }
+
+      async function loadProject() {
+        const uid = getUidFromUrl();
+        const loadingEl = document.getElementById("loading-state");
+        const errorEl = document.getElementById("error-state");
+        const contentEl = document.getElementById("project-content");
+
+        if (!uid) {
+          loadingEl.style.display = "none";
+          errorEl.style.display = "block";
+          document.getElementById("error-message").innerText = "No project UID provided in URL.";
+          return;
+        }
+
+        try {
+          const res = await fetch(`https://absolute-cinema-manager.hackclub.app/api/projects/${encodeURIComponent(uid)}`);
+          if (!res.ok) {
+            throw new Error(res.status === 404 ? "Film not found" : "Failed to load project details");
+          }
+          const data = await res.json();
+
+          // Populate Project Details
+          document.title = `${data.title} - Absolute Cinema`;
+          document.getElementById("project-title").innerText = data.title;
+          document.getElementById("meta-author").innerText = `👤 ${data.author_name || "Creator"}`;
+          document.getElementById("meta-software").innerText = `🛠️ ${data.software}`;
+          document.getElementById("meta-hours").innerText = `⏱️ ${data.hours} hrs`;
+          document.getElementById("meta-status").innerText = `Status: ${data.status || "Submitted"}`;
+          document.getElementById("project-notes").innerText = data.notes || "No notes provided.";
+
+          // Video Embed
+          const ytId = extractYoutubeId(data.youtube_url);
+          const videoFrame = document.getElementById("video-frame");
+          if (ytId) {
+            videoFrame.src = `https://www.youtube-nocookie.com/embed/${ytId}?rel=0`;
+          } else {
+            videoFrame.src = data.youtube_url;
+          }
+
+          // Timelapse Button
+          const timelapseLink = document.getElementById("timelapse-link");
+          if (data.timelapse_url) {
+            timelapseLink.href = data.timelapse_url;
+          } else {
+            timelapseLink.style.display = "none";
+          }
+
+          loadingEl.style.display = "none";
+          contentEl.style.display = "block";
+        } catch (err) {
+          loadingEl.style.display = "none";
+          errorEl.style.display = "block";
+          document.getElementById("error-message").innerText = err.message || "Failed to load project.";
+        }
+      }
+
+      function copyProjectLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          const shareBtn = document.getElementById("share-btn");
+          const originalText = shareBtn.innerText;
+          shareBtn.innerText = "✓ Link Copied!";
+          setTimeout(() => {
+            shareBtn.innerText = originalText;
+          }, 2000);
+        }).catch(() => {
+          prompt("Copy this link:", window.location.href);
+        });
+      }
+
+      window.addEventListener("DOMContentLoaded", loadProject);
+    </script>
+  </body>
+</html>

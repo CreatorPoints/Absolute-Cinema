@@ -13,13 +13,39 @@ if (sessionToken) {
 // 2. Retrieve our token for making API calls
 const token = localStorage.getItem('cinema_session');
 const isDashboard = window.location.pathname.includes("dashboard");
+const isLocalDevelopment =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === "0.0.0.0" ||
+  window.location.hostname === "[::1]" ||
+  window.location.hostname.endsWith(".local") ||
+  window.location.protocol === "file:";
+
+// Set username helper for dashboard UI during local development
+function setDevUsername() {
+  const usernameEl = document.getElementById("username-display");
+  if (usernameEl && (usernameEl.innerText === "..." || !usernameEl.innerText)) {
+    usernameEl.innerText = "Developer";
+  }
+}
+
+// Allow direct navigation to dashboard from home page during local development
+if (isLocalDevelopment && !isDashboard) {
+  const signinLink = document.querySelector(".registration a");
+  if (signinLink) {
+    signinLink.setAttribute("href", "dashboard.html");
+  }
+}
 
 if (!token) {
-  // If there's absolutely no token, and they are trying to peek at the dashboard, boot them.
-  if (isDashboard) {
+  // If there's absolutely no token, and they are trying to peek at the dashboard, boot them (unless in local development).
+  if (isDashboard && !isLocalDevelopment) {
     window.location.replace("/");
   } else {
-    console.log("No active session found. Waiting for user login.");
+    console.log(isLocalDevelopment ? "Local development mode: Dashboard access granted." : "No active session found. Waiting for user login.");
+    if (isDashboard) {
+      setDevUsername();
+    }
   }
 } else {
   // 3. We have a token! Ask the backend who we are.
@@ -32,10 +58,13 @@ if (!token) {
   })
   .then(response => {
     if (!response.ok) {
-      // If the backend says the token is dead, delete it and kick them out
+      // If the backend says the token is dead, delete it and kick them out (unless in local development)
       localStorage.removeItem('cinema_session');
-      if (isDashboard) {
+      if (isDashboard && !isLocalDevelopment) {
         window.location.replace("/");
+      }
+      if (isDashboard && isLocalDevelopment) {
+        setDevUsername();
       }
       throw new Error("Session invalid or expired.");
     }
@@ -54,7 +83,12 @@ if (!token) {
       }
     }
   })
-  .catch(error => console.error("Auth status:", error.message));
+  .catch(error => {
+    console.error("Auth status:", error.message);
+    if (isDashboard && isLocalDevelopment) {
+      setDevUsername();
+    }
+  });
 }
 
 // BONUS: A global logout function you can attach to any button on your site
@@ -71,5 +105,147 @@ window.logoutCinema = async function() {
       console.warn("Logout notification failed:", err.message);
     }
   }
-  window.location.replace("/");
+  window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
 };
+
+// 4. Modal popup handling for "Create a film!"
+if (isDashboard) {
+  const openButtons = document.querySelectorAll('.open-film-modal-btn');
+  const modal = document.getElementById('film-modal');
+  const closeBtn = document.getElementById('close-film-modal');
+  const closeX = document.getElementById('close-film-x');
+
+  function openFilmModal() {
+    if (modal) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeFilmModal() {
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  openButtons.forEach(btn => btn.addEventListener('click', openFilmModal));
+  if (closeBtn) closeBtn.addEventListener('click', closeFilmModal);
+  if (closeX) closeX.addEventListener('click', closeFilmModal);
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeFilmModal();
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+      closeFilmModal();
+    }
+  });
+
+  // 5. Project Form Submission
+  const submissionForm = document.getElementById('submission-form');
+  if (submissionForm) {
+    submissionForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = submissionForm.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn ? submitBtn.innerText : 'Submit Film 🎬';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Creating Project... 🚀';
+      }
+
+      const payload = {
+        title: document.getElementById('film-title')?.value,
+        youtubeUrl: document.getElementById('film-youtube-url')?.value,
+        timelapseUrl: document.getElementById('film-timelapse-url')?.value,
+        software: document.getElementById('film-software')?.value,
+        hours: document.getElementById('film-hours')?.value,
+        notes: document.getElementById('film-notes')?.value
+      };
+
+      try {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const res = await fetch('https://absolute-cinema-manager.hackclub.app/api/projects', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to create project');
+        }
+
+        const targetShowcaseUrl = isLocalDevelopment 
+          ? `/project.html?uid=${data.uid}`
+          : data.url;
+
+        alert(`🎉 Film project created successfully!\n\nView film showcase:\n${targetShowcaseUrl}`);
+
+        addProjectCardToDashboard(data.project);
+        submissionForm.reset();
+        closeFilmModal();
+      } catch (err) {
+        alert(`Error submitting film: ${err.message}`);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalBtnText;
+        }
+      }
+    });
+  }
+
+  function addProjectCardToDashboard(project) {
+    const listEl = document.getElementById('animation-list');
+    if (!listEl || !project) return;
+
+    const projectPageUrl = isLocalDevelopment 
+      ? `/project.html?uid=${project.uid}` 
+      : `/projects/${project.uid}`;
+
+    const card = document.createElement('article');
+    card.className = 'animation-card';
+    card.innerHTML = `
+      <h3>${escapeHtml(project.title)}</h3>
+      <p><strong>Software:</strong> ${escapeHtml(project.software)}</p>
+      <p><strong>Time spent:</strong> ${project.hours} hours</p>
+      <p><strong>Status:</strong> ${escapeHtml(project.status || 'Submitted')}</p>
+      <a href="${projectPageUrl}" target="_blank">🎬 View Film Page</a> |
+      <a href="${project.youtube_url}" target="_blank">View Video</a>
+    `;
+
+    listEl.prepend(card);
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // Load user projects if logged in
+  if (token) {
+    fetch('https://absolute-cinema-manager.hackclub.app/api/my-projects', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    .then(r => r.ok ? r.json() : [])
+    .then(projects => {
+      if (Array.isArray(projects) && projects.length > 0) {
+        const listEl = document.getElementById('animation-list');
+        if (listEl) {
+          listEl.innerHTML = '';
+          projects.forEach(p => addProjectCardToDashboard(p));
+        }
+      }
+    })
+    .catch(() => {});
+  }
+}

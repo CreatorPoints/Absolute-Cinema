@@ -1,0 +1,6 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/projects/:uid", "destination": "/project.html" }
+  ]
+}
