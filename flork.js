@@ -291,12 +291,6 @@
   // Start the RPG Intro Dialogue
   function startFlorkIntro(force = false) {
     createFlorkElements();
-
-    const isNewArrival = localStorage.getItem('cinema_new_arrival') === 'true';
-    if (!force && !isNewArrival && localStorage.getItem('cinema_flork_intro_seen') === 'true') {
-      return;
-    }
-
     getAudioCtx();
 
     // Determine current user display name
@@ -327,6 +321,10 @@
       {
         text: `Check out the weekly theme, hit '+ Create a film!', and set the stage on FIRE!`,
         pose: 'Standing-happy.png'
+      },
+      {
+        text: `You can rewatch this intro anytime by clicking '🎬 Rewatch Intro' in the sidebar. Let's cook! 🚀`,
+        pose: 'Morejoy.png'
       }
     ];
 
@@ -343,8 +341,38 @@
       overlayEl.classList.remove('active');
     }
     document.body.classList.remove('flork-intro-open');
+
+    // Clean up local storage flags
     localStorage.removeItem('cinema_new_arrival');
-    localStorage.setItem('cinema_flork_intro_seen', 'true');
+    localStorage.removeItem('cinema_flork_intro_seen');
+
+    // Update backend so user is recorded as introduced
+    const activeToken = localStorage.getItem('cinema_session') || (window.token || '');
+    if (activeToken) {
+      fetch('https://absolute-cinema-manager.hackclub.app/api/me/intro', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${activeToken}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (window.currentUser) {
+          window.currentUser.has_seen_intro = true;
+          window.currentUser.introduced = true;
+        }
+      })
+      .catch(err => {
+        console.warn('Intro sync to backend error:', err.message);
+      });
+    }
+
+    if (window.currentUser) {
+      window.currentUser.has_seen_intro = true;
+      window.currentUser.introduced = true;
+    }
+
     playFlorkChime(!skipped);
   }
 
@@ -423,6 +451,8 @@
   }
 
   // Hook for authfetch to call when user data is ready on dashboard
+  let introAutoTriggered = false;
+
   window.initFlorkOnDashboard = function (userData) {
     if (userData && !window.currentUser) {
       window.currentUser = userData;
@@ -430,7 +460,12 @@
     const urlParams = new URLSearchParams(window.location.search);
     const forceIntro = urlParams.get('intro') === '1' || urlParams.get('intro') === 'true';
 
-    if (forceIntro || localStorage.getItem('cinema_flork_intro_seen') !== 'true') {
+    // Backend field check: has_seen_intro / introduced
+    const backendIntroduced = userData && (userData.has_seen_intro === true || userData.introduced === true);
+
+    // If user has not been introduced on the backend yet, or forceIntro is requested in URL
+    if ((!backendIntroduced || forceIntro) && !introAutoTriggered) {
+      introAutoTriggered = true;
       setTimeout(() => {
         startFlorkIntro(forceIntro);
       }, 600);
