@@ -88,8 +88,6 @@
   let imgEl = null;
   let cursorEl = null;
   let nextBtnEl = null;
-  let skipBtnEl = null;
-  let soundToggleBtnEl = null;
 
   // Build Flork Intro Modal DOM
   function createFlorkElements() {
@@ -103,32 +101,17 @@
 
     overlay.innerHTML = `
       <div class="flork-dialogue-card" id="flork-dialogue-card">
-        <div class="flork-mascot-perch">
-          <img id="flork-character-img" src="assets/flork/Wave.png" alt="Flork" class="flork-character-img">
-          <div class="flork-name-badge">
-            <span class="flork-name-sparkle">✨</span>
-            <span class="flork-name-text">Flork</span>
+        <div class="flork-dialogue-main">
+          <div class="flork-portrait-frame">
+            <img id="flork-character-img" src="assets/flork/Wave.png" alt="Flork" class="flork-character-img">
+          </div>
+          <div class="flork-dialogue-body" id="flork-dialogue-body">
+            <p class="flork-dialogue-text" id="flork-dialogue-text"></p>
+            <span class="flork-rpg-cursor" id="flork-rpg-cursor" aria-hidden="true">▼</span>
           </div>
         </div>
-
-        <div class="flork-card-header">
-          <div class="flork-dialogue-title">Absolute Cinema • Guide</div>
-          <button type="button" class="flork-sound-btn" id="flork-sound-btn" title="Toggle Sound">
-            <span id="flork-sound-icon">🔊</span>
-          </button>
-        </div>
-
-        <div class="flork-dialogue-body" id="flork-dialogue-body">
-          <p class="flork-dialogue-text" id="flork-dialogue-text"></p>
-          <span class="flork-rpg-cursor" id="flork-rpg-cursor" aria-hidden="true">▼</span>
-        </div>
-
-        <div class="flork-card-footer">
-          <div class="flork-step-indicator" id="flork-step-indicator">Step 1 of 4</div>
-          <div class="flork-btn-group">
-            <button type="button" class="flork-btn-skip" id="flork-btn-skip">Skip</button>
-            <button type="button" class="flork-btn-next" id="flork-btn-next">Next ▶</button>
-          </div>
+        <div class="flork-dialogue-actions">
+          <button type="button" class="flork-btn-next" id="flork-btn-next">Next ▶</button>
         </div>
       </div>
     `;
@@ -141,12 +124,9 @@
     imgEl = document.getElementById('flork-character-img');
     cursorEl = document.getElementById('flork-rpg-cursor');
     nextBtnEl = document.getElementById('flork-btn-next');
-    skipBtnEl = document.getElementById('flork-btn-skip');
-    soundToggleBtnEl = document.getElementById('flork-sound-btn');
 
     // Click anywhere on dialogue body/card to advance or fast-forward
-    cardEl.addEventListener('click', (e) => {
-      if (e.target.closest('#flork-btn-skip') || e.target.closest('#flork-sound-btn')) return;
+    cardEl.addEventListener('click', () => {
       handleCardClick();
     });
 
@@ -155,19 +135,7 @@
       handleCardClick();
     });
 
-    skipBtnEl.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeFlorkIntro(true);
-    });
-
-    soundToggleBtnEl.addEventListener('click', (e) => {
-      e.stopPropagation();
-      soundEnabled = !soundEnabled;
-      const icon = document.getElementById('flork-sound-icon');
-      if (icon) icon.textContent = soundEnabled ? '🔊' : '🔇';
-    });
-
-    // Keyboard support: Space / Enter advances
+    // Keyboard support: Space / Enter advances, Escape closes
     document.addEventListener('keydown', (e) => {
       if (overlayEl && overlayEl.classList.contains('active')) {
         if (e.key === ' ' || e.key === 'Enter') {
@@ -248,10 +216,6 @@
     if (cursorEl) {
       cursorEl.classList.add('visible');
     }
-    const indicator = document.getElementById('flork-step-indicator');
-    if (indicator) {
-      indicator.textContent = `Step ${currentStepIndex + 1} of ${currentScript.length}`;
-    }
     if (currentStepIndex === currentScript.length - 1) {
       if (nextBtnEl) nextBtnEl.textContent = "Let's Cook! 🚀";
     } else {
@@ -279,11 +243,6 @@
   function showCurrentStep() {
     const step = currentScript[currentStepIndex];
     if (!step) return;
-
-    const indicator = document.getElementById('flork-step-indicator');
-    if (indicator) {
-      indicator.textContent = `Step ${currentStepIndex + 1} of ${currentScript.length}`;
-    }
 
     typeMessage(step.text, step.pose);
   }
@@ -321,10 +280,6 @@
       {
         text: `Check out the weekly theme, hit '+ Create a film!', and set the stage on FIRE!`,
         pose: 'Standing-happy.png'
-      },
-      {
-        text: `You can rewatch this intro anytime by clicking '🎬 Rewatch Intro' in the sidebar. Let's cook! 🚀`,
-        pose: 'Morejoy.png'
       }
     ];
 
