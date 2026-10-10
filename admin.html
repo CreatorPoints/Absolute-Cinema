@@ -52,6 +52,36 @@
                 <p><strong style="color: #4ade80;">Active</strong></p>
               </div>
             </div>
+
+            <div style="margin-top: 30px;">
+              <button type="button" id="toggle-users-btn" class="action-btn btn-secondary">
+                👥 View User List <span id="user-count-badge" class="review-count-badge" style="display: none;">0</span>
+              </button>
+            </div>
+
+            <div id="users-container" class="admin-users-card" style="display: none;">
+              <div class="admin-users-header">
+                <h3>User Management</h3>
+                <button type="button" id="close-users-btn" class="modal-close-x" style="font-size: 20px;">&times;</button>
+              </div>
+              <div class="users-table-container">
+                <table class="admin-users-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>AniChips</th>
+                      <th>Joined</th>
+                    </tr>
+                  </thead>
+                  <tbody id="users-table-body">
+                    <tr><td colspan="6" style="text-align: center; color: #94a3b8; padding: 24px;">Click to load users...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </section>
         </main>
         <hr>
@@ -68,5 +98,6 @@
     </div>
     <script src="emoji.js"></script>
     <script src="authfetch.js"></script>
+    <script src="admin.js"></script>
   </body>
 </html>
