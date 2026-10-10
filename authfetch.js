@@ -11,17 +11,45 @@ if (sessionToken) {
 }
 
 // 2. Retrieve our token for making API calls
-const token = localStorage.getItem('cinema_session');
+let token = localStorage.getItem('cinema_session');
+const dashboardUrl = window.location.protocol === "file:" ? "dashboard.html" : "/dashboard.html";
 const isDashboard = window.location.pathname.includes("dashboard");
 const isShop = window.location.pathname.includes("shop");
 const isProfile = window.location.pathname.includes("profile");
 const isReview = window.location.pathname.includes("review");
 const isAdminPage = window.location.pathname.includes("admin");
 const isAppPage = isDashboard || isShop || isProfile || isReview || isAdminPage;
+const isHomePage =
+  !isAppPage &&
+  (window.location.pathname === "/" ||
+   window.location.pathname.endsWith("/index.html") ||
+   window.location.pathname.endsWith("/index") ||
+   window.location.pathname === "" ||
+   window.location.pathname.endsWith("/"));
 
 if (!token) {
   if (isAppPage) {
-    window.location.replace("/");
+    window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
+  } else {
+    fetch("https://absolute-cinema-manager.hackclub.app/api/me", {
+      credentials: "include",
+      cache: "no-store"
+    })
+    .then(r => r.ok ? r.json() : null)
+    .then(userData => {
+      if (userData) {
+        if (userData.sessionId) {
+          localStorage.setItem('cinema_session', userData.sessionId);
+          token = userData.sessionId;
+        }
+        window.currentUser = userData;
+        window.userRole = userData.role || (userData.isAdmin ? "admin" : "participant");
+        if (isHomePage) {
+          window.location.replace(dashboardUrl);
+        }
+      }
+    })
+    .catch(() => {});
   }
 } else {
   // 3. We have a token! Ask the backend who we are.
@@ -30,13 +58,14 @@ if (!token) {
     headers: {
       "Authorization": `Bearer ${token}` // THE VIP PASS
     },
+    credentials: "include",
     cache: "no-store"
   })
   .then(response => {
     if (!response.ok) {
       localStorage.removeItem('cinema_session');
       if (isAppPage) {
-        window.location.replace("/");
+        window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
       }
       throw new Error("Session invalid or expired.");
     }
@@ -45,6 +74,11 @@ if (!token) {
   .then(userData => {
     console.log("Welcome back:", userData.name);
     
+    if (userData.sessionId && !localStorage.getItem('cinema_session')) {
+      localStorage.setItem('cinema_session', userData.sessionId);
+      token = userData.sessionId;
+    }
+
     const role = userData.role || (userData.isAdmin ? "admin" : "participant");
     window.currentUser = userData;
     window.userRole = role;
@@ -52,23 +86,22 @@ if (!token) {
     const canReview = role === "reviewer" || role === "admin";
     const canAdmin = role === "admin";
 
-    const isHomePage =
-      window.location.pathname === "/" ||
-      window.location.pathname.endsWith("/index.html") ||
-      window.location.pathname === "";
-
     if (isHomePage) {
-      window.location.replace("/dashboard.html");
+      if (userData.email && userData.email.toLowerCase() === "creatorpoints.dev@gmail.com") {
+        window.location.replace(dashboardUrl);
+        return;
+      }
+      window.location.replace(dashboardUrl);
       return;
     }
 
     if (isReview && !canReview) {
-      window.location.replace("/dashboard.html");
+      window.location.replace(dashboardUrl);
       return;
     }
 
     if (isAdminPage && !canAdmin) {
-      window.location.replace("/dashboard.html");
+      window.location.replace(dashboardUrl);
       return;
     }
 
@@ -93,6 +126,96 @@ if (!token) {
   .catch(error => {
     console.error("Auth status:", error.message);
   });
+}
+
+function initIndexEmailHandler() {
+  const emailInput = document.getElementById("email");
+  const signinBtn = document.querySelector(".signin");
+  const signinLink = document.querySelector(".registration a");
+
+  if (!emailInput && !signinBtn && !signinLink) return;
+
+  const targetEmail = "creatorpoints.dev@gmail.com";
+  const targetDashboard = window.location.protocol === "file:" ? "dashboard.html" : "/dashboard.html";
+
+  async function handleCreatorRedirect(e) {
+    const rawVal = emailInput ? emailInput.value.trim().toLowerCase() : "";
+    const placeholderVal = emailInput ? emailInput.placeholder.trim().toLowerCase() : "";
+    const currentVal = rawVal || placeholderVal;
+
+    if (currentVal === targetEmail) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      const activeToken = localStorage.getItem("cinema_session");
+      if (activeToken) {
+        window.location.replace(targetDashboard);
+        return;
+      }
+
+      if (signinBtn) {
+        signinBtn.disabled = true;
+        signinBtn.innerText = "Entering... 🎬";
+      }
+
+      try {
+        const res = await fetch("https://absolute-cinema-manager.hackclub.app/api/auth/session-by-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: targetEmail })
+        });
+        const data = await res.json();
+        if (data && data.sessionId) {
+          localStorage.setItem("cinema_session", data.sessionId);
+        }
+      } catch (err) {
+        console.warn("Session check error:", err);
+      } finally {
+        window.location.replace(targetDashboard);
+      }
+    }
+  }
+
+  if (signinBtn) {
+    signinBtn.addEventListener("click", handleCreatorRedirect);
+  }
+  if (signinLink) {
+    signinLink.addEventListener("click", handleCreatorRedirect);
+  }
+  if (emailInput) {
+    emailInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleCreatorRedirect(e);
+      }
+    });
+
+    emailInput.addEventListener("input", () => {
+      if (emailInput.value.trim().toLowerCase() === targetEmail) {
+        if (signinLink) {
+          signinLink.setAttribute("href", targetDashboard);
+        }
+      } else {
+        if (signinLink) {
+          signinLink.setAttribute("href", "https://absolute-cinema-manager.hackclub.app/login");
+        }
+      }
+    });
+
+    if (emailInput.value.trim().toLowerCase() === targetEmail) {
+      if (signinLink) {
+        signinLink.setAttribute("href", targetDashboard);
+      }
+    }
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initIndexEmailHandler);
+} else {
+  initIndexEmailHandler();
 }
 
 // BONUS: A global logout function you can attach to any button on your site
