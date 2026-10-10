@@ -297,6 +297,15 @@ footer a:hover {
   border-radius: 14px;
 }
 
+.bg-marquee-content img[src*="flork"] {
+  object-fit: contain;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.35));
+}
+
 .marquee-left .bg-marquee-content {
   animation: bgMarqueeLeft 35s linear infinite;
 }
