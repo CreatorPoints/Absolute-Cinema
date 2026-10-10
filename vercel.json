@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/projects/:uid", "destination": "/project.html" }
+    { "source": "/projects/:uid", "destination": "/project" },
+    { "source": "/projects/:uid/", "destination": "/project" }
   ]
 }
