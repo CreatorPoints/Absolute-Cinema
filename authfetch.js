@@ -112,11 +112,15 @@ if (!token) {
     }
     const anichipsEl = document.getElementById("anichips-balance");
     if (anichipsEl && userData.anichips !== undefined) {
-      anichipsEl.innerText = userData.anichips;
+      if (!isDashboard) {
+        animateStatNumber(anichipsEl, userData.anichips, 1000, false);
+      }
     }
     const statChipsEl = document.getElementById("stats-anichips");
     if (statChipsEl && userData.anichips !== undefined) {
-      statChipsEl.innerText = userData.anichips;
+      if (!isDashboard) {
+        animateStatNumber(statChipsEl, userData.anichips, 1000, false);
+      }
     }
     const reviewLink = document.getElementById("review-nav-link");
     if (reviewLink) {
@@ -222,6 +226,55 @@ if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initIndexEmailHandler);
 } else {
   initIndexEmailHandler();
+}
+
+function animateStatNumber(element, targetValue, duration = 1200, isDecimal = false) {
+  if (!element) return;
+  const target = Number(targetValue) || 0;
+  const currentValAttr = element.getAttribute('data-val');
+  const start = currentValAttr !== null ? (parseFloat(currentValAttr) || 0) : (parseFloat(element.textContent) || 0);
+
+  if (currentValAttr !== null && start === target) {
+    return;
+  }
+
+  element.setAttribute('data-val', target);
+
+  if (element._animFrameId) {
+    cancelAnimationFrame(element._animFrameId);
+  }
+
+  if (start === target) {
+    element.textContent = isDecimal ? target.toFixed(1) : target;
+    return;
+  }
+
+  element.classList.add('stat-counting');
+  const startTime = performance.now();
+
+  function step(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Smooth cubic ease-out
+    const easeProgress = 1 - Math.pow(1 - progress, 3);
+    const current = start + (target - start) * easeProgress;
+
+    if (isDecimal) {
+      element.textContent = current.toFixed(1);
+    } else {
+      element.textContent = Math.round(current);
+    }
+
+    if (progress < 1) {
+      element._animFrameId = requestAnimationFrame(step);
+    } else {
+      element.textContent = isDecimal ? target.toFixed(1) : target;
+      element._animFrameId = null;
+      element.classList.remove('stat-counting');
+    }
+  }
+
+  element._animFrameId = requestAnimationFrame(step);
 }
 
 // BONUS: A global logout function you can attach to any button on your site
@@ -392,28 +445,83 @@ if (isDashboard) {
     return card;
   }
 
-  function updateDashboardStats(userData, projects) {
-    const chips = (userData && userData.anichips !== undefined && userData.anichips !== null) ? Number(userData.anichips) : 0;
+  let statsSectionVisible = false;
+  let latestStatsData = null;
+
+  function triggerStatsAnimation() {
+    if (!latestStatsData) return;
+    const { chips, formattedHours, hasDecimal, count } = latestStatsData;
     const statChipsEl = document.getElementById('stats-anichips');
     if (statChipsEl) {
-      statChipsEl.textContent = chips;
+      animateStatNumber(statChipsEl, chips, 1200, false);
     }
+    const statHoursEl = document.getElementById('stats-total-hours');
+    if (statHoursEl) {
+      animateStatNumber(statHoursEl, formattedHours, 1200, hasDecimal);
+    }
+    const statCountEl = document.getElementById('stats-animations-count');
+    if (statCountEl) {
+      animateStatNumber(statCountEl, count, 1200, false);
+    }
+  }
+
+  function initDashboardStatsObserver() {
+    const statsSection = document.getElementById('stats') || document.querySelector('.stats-overview');
+    if (!statsSection) {
+      statsSectionVisible = true;
+      return;
+    }
+
+    function onVisible() {
+      if (!statsSectionVisible) {
+        statsSectionVisible = true;
+        triggerStatsAnimation();
+      }
+    }
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            onVisible();
+          }
+        });
+      }, { threshold: 0.1 });
+      observer.observe(statsSection);
+    } else {
+      function checkInView() {
+        const rect = statsSection.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom >= 0) {
+          onVisible();
+          window.removeEventListener('scroll', checkInView);
+        }
+      }
+      window.addEventListener('scroll', checkInView, { passive: true });
+      checkInView();
+    }
+  }
+
+  function updateDashboardStats(userData, projects) {
+    const chips = (userData && userData.anichips !== undefined && userData.anichips !== null) ? Number(userData.anichips) : 0;
     const navChipsEl = document.getElementById('anichips-balance');
     if (navChipsEl) {
-      navChipsEl.textContent = chips;
+      animateStatNumber(navChipsEl, chips, 1200, false);
     }
 
     const projectList = Array.isArray(projects) ? projects : [];
     const totalHours = projectList.reduce((acc, p) => acc + (parseFloat(p.hours) || 0), 0);
-    const formattedHours = Number.isInteger(totalHours) ? totalHours : (Math.round(totalHours * 10) / 10);
-    const statHoursEl = document.getElementById('stats-total-hours');
-    if (statHoursEl) {
-      statHoursEl.textContent = formattedHours;
-    }
+    const hasDecimal = !Number.isInteger(totalHours);
+    const formattedHours = hasDecimal ? (Math.round(totalHours * 10) / 10) : totalHours;
 
-    const statCountEl = document.getElementById('stats-animations-count');
-    if (statCountEl) {
-      statCountEl.textContent = projectList.length;
+    latestStatsData = {
+      chips,
+      formattedHours,
+      hasDecimal,
+      count: projectList.length
+    };
+
+    if (statsSectionVisible) {
+      triggerStatsAnimation();
     }
   }
 
@@ -507,6 +615,7 @@ if (isDashboard) {
   }
 
   refreshDashboardData();
+  initDashboardStatsObserver();
   setInterval(refreshDashboardData, 3000);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
