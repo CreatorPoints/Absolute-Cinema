@@ -213,17 +213,7 @@ footer a:hover {
   transform: translateY(-2px);
 }
 
-/* ==========================================================================
-   Slack & Custom Emojis
-   ========================================================================== */
-.slack-emoji {
-  display: inline-block;
-  height: 1.25em;
-  width: 1.25em;
-  vertical-align: -0.22em;
-  object-fit: contain;
-  margin: 0 0.05em;
-}
+
 
 /* ==========================================================================
    Landing Keyframes Suite
