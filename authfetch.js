@@ -13,6 +13,11 @@ if (sessionToken) {
 // 2. Retrieve our token for making API calls
 const token = localStorage.getItem('cinema_session');
 const isDashboard = window.location.pathname.includes("dashboard");
+const isShop = window.location.pathname.includes("shop");
+const isProfile = window.location.pathname.includes("profile");
+const isReview = window.location.pathname.includes("review");
+const isAdminPage = window.location.pathname.includes("admin");
+const isAppPage = isDashboard || isShop || isProfile || isReview || isAdminPage;
 const isLocalDevelopment =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1" ||
@@ -23,14 +28,28 @@ const isLocalDevelopment =
 
 // Set username helper for dashboard UI during local development
 function setDevUsername() {
+  window.currentUser = { name: "Developer", role: "admin", isAdmin: true, isReviewer: true, anichips: 0 };
+  window.userRole = "admin";
   const usernameEl = document.getElementById("username-display");
   if (usernameEl && (usernameEl.innerText === "..." || !usernameEl.innerText)) {
     usernameEl.innerText = "Developer";
   }
+  const anichipsEl = document.getElementById("anichips-balance");
+  if (anichipsEl && (!anichipsEl.innerText || anichipsEl.innerText === "0")) {
+    anichipsEl.innerText = "0";
+  }
+  const reviewLink = document.getElementById("review-nav-link");
+  if (reviewLink) {
+    reviewLink.style.display = "flex";
+  }
+  const adminLink = document.getElementById("admin-nav-link");
+  if (adminLink) {
+    adminLink.style.display = "flex";
+  }
 }
 
 // Allow direct navigation to dashboard from home page during local development
-if (isLocalDevelopment && !isDashboard) {
+if (isLocalDevelopment && !isAppPage) {
   const signinLink = document.querySelector(".registration a");
   if (signinLink) {
     signinLink.setAttribute("href", "dashboard.html");
@@ -38,12 +57,12 @@ if (isLocalDevelopment && !isDashboard) {
 }
 
 if (!token) {
-  // If there's absolutely no token, and they are trying to peek at the dashboard, boot them (unless in local development).
-  if (isDashboard && !isLocalDevelopment) {
+  // If there's absolutely no token, and they are trying to peek at protected app pages, boot them (unless in local development).
+  if (isAppPage && !isLocalDevelopment) {
     window.location.replace("/");
   } else {
-    console.log(isLocalDevelopment ? "Local development mode: Dashboard access granted." : "No active session found. Waiting for user login.");
-    if (isDashboard) {
+    console.log(isLocalDevelopment ? "Local development mode: Access granted." : "No active session found. Waiting for user login.");
+    if (isAppPage) {
       setDevUsername();
     }
   }
@@ -60,10 +79,10 @@ if (!token) {
     if (!response.ok) {
       // If the backend says the token is dead, delete it and kick them out (unless in local development)
       localStorage.removeItem('cinema_session');
-      if (isDashboard && !isLocalDevelopment) {
+      if (isAppPage && !isLocalDevelopment) {
         window.location.replace("/");
       }
-      if (isDashboard && isLocalDevelopment) {
+      if (isAppPage && isLocalDevelopment) {
         setDevUsername();
       }
       throw new Error("Session invalid or expired.");
@@ -73,19 +92,54 @@ if (!token) {
   .then(userData => {
     console.log("Welcome back:", userData.name);
     
-    if (!isDashboard) {
+    const role = userData.role || (userData.isAdmin ? "admin" : "participant");
+    window.currentUser = userData;
+    window.userRole = role;
+
+    const canReview = role === "reviewer" || role === "admin" || isLocalDevelopment;
+    const canAdmin = role === "admin" || isLocalDevelopment;
+
+    const isHomePage =
+      window.location.pathname === "/" ||
+      window.location.pathname.endsWith("/index.html") ||
+      window.location.pathname === "";
+
+    if (isHomePage) {
       window.location.replace("/dashboard.html");
-    } else {
-      console.log("Safely landed on the dashboard. Absolute Cinema is online.");
-      const usernameEl = document.getElementById("username-display");
-      if (usernameEl) {
-        usernameEl.innerText = userData.name || userData.email || "Creator";
-      }
+      return;
+    }
+
+    if (isReview && !canReview) {
+      window.location.replace("/dashboard.html");
+      return;
+    }
+
+    if (isAdminPage && !canAdmin) {
+      window.location.replace("/dashboard.html");
+      return;
+    }
+
+    console.log("Safely landed on app page. Absolute Cinema is online.");
+    const usernameEl = document.getElementById("username-display");
+    if (usernameEl) {
+      usernameEl.innerText = userData.name || userData.email || "Creator";
+    }
+    const anichipsEl = document.getElementById("anichips-balance");
+    if (anichipsEl && userData.anichips !== undefined) {
+      anichipsEl.innerText = userData.anichips;
+    }
+    const reviewLink = document.getElementById("review-nav-link");
+    if (reviewLink) {
+      reviewLink.style.display = canReview ? "flex" : "none";
+    }
+    const adminLink = document.getElementById("admin-nav-link");
+    if (adminLink) {
+      adminLink.style.display = canAdmin ? "flex" : "none";
     }
   })
   .catch(error => {
     console.error("Auth status:", error.message);
-    if (isDashboard && isLocalDevelopment) {
+    if (isAppPage && isLocalDevelopment) {
       setDevUsername();
     }
   });

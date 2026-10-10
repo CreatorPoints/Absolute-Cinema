@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Creator Profile - Absolute Cinema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./dash.css">
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+          <a href="https://hackclub.com/">
+            <img src="assets/hackclub.svg" alt="Hack Club" width="140" height="53">
+          </a>
+        </div>
+        <div class="sidebar-action">
+          <a href="dashboard.html" style="text-decoration: none; width: 100%;">
+            <button class="create-film-btn" type="button">
+              Dashboard
+            </button>
+          </a>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="dashboard.html#animations" class="sidebar-link">Animations</a>
+          <a href="shop.html" class="sidebar-link">Shop</a>
+          <a href="profile.html" class="sidebar-link" style="color: #4DA3FF; background: rgba(77, 163, 255, 0.12); border-color: rgba(77, 163, 255, 0.35);">Profile</a>
+          <a href="review.html" id="review-nav-link" class="sidebar-link">Review</a>
+          <a href="admin.html" id="admin-nav-link" class="sidebar-link">Admin</a>
+        </nav>
+        <div class="sidebar-footer">
+          <button class="logout-btn" onclick="logoutCinema()">Log out</button>
+        </div>
+      </aside>
+      <div class="dashboard-main-content">
+        <div class="floating-balance-badge">:anichips:<span id="anichips-balance">0</span></div>
+        <header class="greet">
+          <h1><span>Profile</span></h1>
+          <p>Creator details and animation statistics.</p>
+        </header>
+        <hr>
+        <main>
+          <section class="profile-details">
+            <h2>User Info</h2>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <h3>Name</h3>
+                <p><strong id="username-display">...</strong></p>
+              </div>
+            </div>
+          </section>
+        </main>
+        <hr>
+        <footer>
+          <h1><b>Absolute Cinema</b></h1>
+          <p>Made with &lt;3 by @CreatorPoints, whose first website project happened to be this</p>
+          <p>A Hack Club YSWS</p>
+          <hr>
+          <div class="community">
+            <a href="https://app.slack.com/client/E09V59WQY1E/C0C4S835R4L" target="_blank">Join our Slack community!</a>
+          </div>
+        </footer>
+      </div>
+    </div>
+    <script src="emoji.js"></script>
+    <script src="authfetch.js"></script>
+  </body>
+</html>

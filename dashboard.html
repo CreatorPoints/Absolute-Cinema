@@ -12,52 +12,39 @@
   </head>
   <body>
     <div class="dashboard-container">
-      <!-- Left Sidebar with Action & Navigation Buttons -->
       <aside class="dashboard-sidebar">
         <div class="sidebar-brand">
           <a href="https://hackclub.com/">
             <img src="assets/hackclub.svg" alt="Hack Club" width="140" height="53">
           </a>
         </div>
-
-        <!-- Hero Action Button on the Left -->
         <div class="sidebar-action">
           <button id="open-film-modal" class="create-film-btn open-film-modal-btn">
-            🎬 Create a film!
+            Create a film!
           </button>
         </div>
-
-        <!-- Left Navigation Buttons -->
         <nav class="sidebar-nav">
-          <a href="#stats" class="sidebar-link">📊 Stats</a>
-          <a href="#weekly-theme" class="sidebar-link">🏆 Week 1 Theme</a>
-          <a href="#animations" class="sidebar-link">🎞️ Animations</a>
-          <a href="#rewards-shop" class="sidebar-link">🛍️ AniChips Shop</a>
+          <a href="#animations" class="sidebar-link">Animations</a>
+          <a href="shop.html" class="sidebar-link">Shop</a>
+          <a href="profile.html" class="sidebar-link">Profile</a>
+          <a href="review.html" id="review-nav-link" class="sidebar-link">Review</a>
+          <a href="admin.html" id="admin-nav-link" class="sidebar-link">Admin</a>
         </nav>
-
         <div class="sidebar-footer">
           <button class="logout-btn" onclick="logoutCinema()">Log out</button>
         </div>
       </aside>
-
-      <!-- Main Dashboard Content (Right Side) -->
       <div class="dashboard-main-content">
-        <!-- Welcome / Header Section -->
         <header class="greet">
           <h1>Welcome, <span id="username-display">...</span>!</h1>
-          <p>Time to set the stage on FIRE!</p>
-
-          <!-- WIP Notice -->
+          <p>Time to set the stage on FIRE! :fire-anim:</p>
           <div class="wip-banner">
-            <span class="wip-icon">🚧</span>
+            <span class="wip-icon">:siren:</span>
             <p class="wip-message">CreatorPoints is busy making the cinema hall</p>
           </div>
         </header>
-
         <hr>
-
         <main>
-          <!-- Stats Overview Boilerplate -->
           <section id="stats" class="stats-overview">
             <h2>Your Stats</h2>
             <div class="stats-grid">
@@ -75,74 +62,23 @@
               </div>
             </div>
           </section>
-
           <hr>
-
-          <!-- Weekly Theme & Prompt -->
           <section id="weekly-theme" class="weekly-theme">
-            <h2>Current Theme: Week 1</h2>
-            <h3>Theme: <span>TBD (Starts October 10th)</span></h3>
+            <h2>Week 1</h2>
+            <h3>Theme: <span>Not Yet Thoutght of...</span></h3>
           </section>
-
           <hr>
-
-          <!-- Your Animations List Boilerplate -->
           <section id="animations" class="animations">
             <div class="section-title-row">
               <h2>Your Animations:</h2>
               <button class="create-film-btn-small open-film-modal-btn">+ Create a film!</button>
             </div>
             <div class="animation-list" id="animation-list">
-              <!-- Example Animation Card 1 -->
-              <article class="animation-card">
-                <h3>Example: Bouncing Ball 3D</h3>
-                <p><strong>Software:</strong> Blender</p>
-                <p><strong>Time spent:</strong> 3.5 hours</p>
-                <p><strong>Status:</strong> Approved</p>
-                <p><strong>Reward:</strong> +10 AniChips</p>
-                <a href="#" target="_blank">View Video</a> |
-                <a href="#" target="_blank">View Timelapse</a>
-              </article>
-
-              <!-- Example Animation Card 2 -->
-              <article class="animation-card">
-                <h3>Example: 2D Character Jump</h3>
-                <p><strong>Software:</strong> Krita / OpenToonz</p>
-                <p><strong>Time spent:</strong> 5.0 hours</p>
-                <p><strong>Status:</strong> Under Review</p>
-                <p><strong>Reward:</strong> Pending</p>
-                <a href="#" target="_blank">View Video</a> |
-                <a href="#" target="_blank">View Timelapse</a>
-              </article>
+              <p>You have no films cooked yet!</p>
             </div>
           </section>
-
           <hr>
-
-          <!-- AniChips Shop / Rewards Preview Boilerplate -->
-          <section id="rewards-shop" class="rewards-shop">
-            <h2>AniChips Shop</h2>
-            <div class="shop-grid">
-              <div class="shop-item">
-                <h3>Vinyl Sticker Pack</h3>
-                <p>Cost: 15 AniChips</p>
-                <button type="button">Redeem</button>
-              </div>
-              <div class="shop-item">
-                <h3>Drawing Glove</h3>
-                <p>Cost: 30 AniChips</p>
-                <button type="button">Redeem</button>
-              </div>
-              <div class="shop-item">
-                <h3>Drawing Tablet</h3>
-                <p>Cost: 100 AniChips</p>
-                <button type="button">Redeem</button>
-              </div>
-            </div>
-          </section>
         </main>
-
-        <!-- Footer -->
         <footer>
           <h1><b>Absolute Cinema</b></h1>
           <p>Made with &lt;3 by @CreatorPoints, whose first website project happened to be this</p>
@@ -156,52 +92,36 @@
         </footer>
       </div>
     </div>
-
-    <!-- Create a Film Popup Modal -->
     <div id="film-modal" class="modal-overlay">
       <div class="modal-content">
         <div class="modal-header">
           <h2>Create a film!</h2>
           <button type="button" id="close-film-x" class="modal-close-x" aria-label="Close modal">&times;</button>
         </div>
-        <p class="modal-subtitle">Submit your YouTube animation and timelapse proof to earn AniChips.</p>
+        <p class="modal-subtitle">Make a fire film, get Absolute Cinema-ed!</p>
         <form id="submission-form" class="modal-form">
           <div class="form-group">
-            <label for="film-title">Film / Animation Title *</label>
-            <input type="text" id="film-title" name="title" placeholder="e.g. Cyberpunk Walk Cycle" required>
-          </div>
-          <div class="form-group">
-            <label for="film-youtube-url">YouTube Video URL *</label>
-            <input type="url" id="film-youtube-url" name="youtubeUrl" placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..." required>
-            <span class="field-hint">Upload your film to YouTube (Public or Unlisted) so our servers stay chill!</span>
-          </div>
-          <div class="form-group">
-            <label for="film-timelapse-url">Timelapse (Lapse) Proof URL *</label>
-            <input type="url" id="film-timelapse-url" name="timelapseUrl" placeholder="https://youtube.com/... or Google Drive link" required>
-            <span class="field-hint">Screen recording or lapse proving your animation process.</span>
+            <label for="film-title">Animation Title *</label>
+            <input type="text" id="film-title" name="title" placeholder="My Fire Film" required>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="film-software">Software / Tools Used *</label>
+              <label for="film-software">Software / Tools you will use *</label>
               <input type="text" id="film-software" name="software" placeholder="e.g. Blender, Maya, Krita" required>
-            </div>
-            <div class="form-group">
-              <label for="film-hours">Hours Spent *</label>
-              <input type="number" id="film-hours" name="hours" step="0.5" min="0.5" placeholder="e.g. 4.5" required>
             </div>
           </div>
           <div class="form-group">
-            <label for="film-notes">Description / Behind the Scenes</label>
-            <textarea id="film-notes" name="notes" rows="3" placeholder="Tell us about your story, techniques, or challenges..."></textarea>
+            <label for="film-notes">Description</label>
+            <textarea id="film-notes" name="notes" rows="3" placeholder="How did you cook it?"></textarea>
           </div>
           <div class="modal-actions">
             <button type="button" id="close-film-modal" class="cancel-modal-btn">Cancel</button>
-            <button type="submit" class="submit-modal-btn">Submit Film 🎬</button>
+            <button type="submit" class="submit-modal-btn">Submit Film</button>
           </div>
         </form>
       </div>
     </div>
-
+    <script src="emoji.js"></script>
     <script src="authfetch.js"></script>
   </body>
 </html>
