@@ -114,6 +114,10 @@ if (!token) {
     if (anichipsEl && userData.anichips !== undefined) {
       anichipsEl.innerText = userData.anichips;
     }
+    const statChipsEl = document.getElementById("stats-anichips");
+    if (statChipsEl && userData.anichips !== undefined) {
+      statChipsEl.innerText = userData.anichips;
+    }
     const reviewLink = document.getElementById("review-nav-link");
     if (reviewLink) {
       reviewLink.style.display = canReview ? "flex" : "none";
@@ -243,9 +247,14 @@ if (isDashboard) {
   const modal = document.getElementById('film-modal');
   const closeBtn = document.getElementById('close-film-modal');
   const closeX = document.getElementById('close-film-x');
+  const feedbackMsg = document.getElementById('modal-feedback-msg');
 
   function openFilmModal() {
     if (modal) {
+      if (feedbackMsg) {
+        feedbackMsg.textContent = '';
+        feedbackMsg.style.display = 'none';
+      }
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
@@ -255,6 +264,10 @@ if (isDashboard) {
     if (modal) {
       modal.classList.remove('active');
       document.body.style.overflow = '';
+      if (feedbackMsg) {
+        feedbackMsg.textContent = '';
+        feedbackMsg.style.display = 'none';
+      }
     }
   }
 
@@ -274,7 +287,6 @@ if (isDashboard) {
     }
   });
 
-  // 5. Project Form Submission
   const submissionForm = document.getElementById('submission-form');
   if (submissionForm) {
     submissionForm.addEventListener('submit', async (e) => {
@@ -284,7 +296,11 @@ if (isDashboard) {
       const originalBtnText = submitBtn ? submitBtn.innerText : 'Submit Film 🎬';
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = 'Creating Project... 🚀';
+        submitBtn.innerText = 'Creating Film... 🎬';
+      }
+      if (feedbackMsg) {
+        feedbackMsg.textContent = '';
+        feedbackMsg.style.display = 'none';
       }
 
       const payload = {
@@ -295,9 +311,10 @@ if (isDashboard) {
       };
 
       try {
+        const activeToken = localStorage.getItem('cinema_session') || token;
         const headers = { 'Content-Type': 'application/json' };
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
+        if (activeToken) {
+          headers['Authorization'] = `Bearer ${activeToken}`;
         }
 
         const res = await fetch('https://absolute-cinema-manager.hackclub.app/api/projects', {
@@ -308,18 +325,17 @@ if (isDashboard) {
 
         const data = await res.json();
         if (!res.ok) {
-          throw new Error(data.error || 'Failed to create project');
+          throw new Error(data.error || 'Failed to create film');
         }
 
-        const targetShowcaseUrl = data.url || `/projects/${data.uid}`;
-
-        alert(`🎉 Film created successfully!\n\nView film:\n${targetShowcaseUrl}`);
-
-        addProjectCardToDashboard(data.project);
         submissionForm.reset();
         closeFilmModal();
+        await refreshDashboardData();
       } catch (err) {
-        alert(`Error submitting film: ${err.message}`);
+        if (feedbackMsg) {
+          feedbackMsg.textContent = err.message || 'Error creating film';
+          feedbackMsg.style.display = 'block';
+        }
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
@@ -329,24 +345,39 @@ if (isDashboard) {
     });
   }
 
-  function addProjectCardToDashboard(project) {
-    const listEl = document.getElementById('animation-list');
-    if (!listEl || !project) return;
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
+  function createProjectCard(project) {
     const projectPageUrl = `/projects/${project.uid}`;
 
     const rawStatus = (project.status || "design").toLowerCase();
+    const isAbsCinema = project.is_absolute_cinema === 1 || project.is_absolute_cinema === true || rawStatus === "absolute_cinema";
+
     let statusLabel = "Design";
-    if (rawStatus === "submitted") statusLabel = "Pending Review";
-    if (rawStatus === "approved") statusLabel = "Approved";
-    if (rawStatus === "declined") statusLabel = "Declined";
+    let statusColor = "#94a3b8";
+    if (isAbsCinema) {
+      statusLabel = "Absolute Cinema 🎬✨";
+      statusColor = "#f59e0b";
+    } else if (rawStatus === "submitted") {
+      statusLabel = "Pending Review ⏳";
+      statusColor = "#38bdf8";
+    } else if (rawStatus === "approved") {
+      statusLabel = "Approved ✅";
+      statusColor = "#22c55e";
+    } else if (rawStatus === "declined") {
+      statusLabel = "Declined ❌";
+      statusColor = "#ef4444";
+    }
 
     const card = document.createElement('article');
     card.className = 'animation-card';
     const bannerHtml = project.banner_url
       ? `<div style="max-height: 180px; overflow: hidden; border-radius: 8px; margin-bottom: 12px;"><img src="${escapeHtml(project.banner_url)}" style="width: 100%; max-height: 180px; object-fit: cover; display: block;" onerror="this.parentElement.style.display='none'"></div>`
       : '';
-    const hoursHtml = Number(project.hours) > 0 ? `<p><strong>Time spent:</strong> ${project.hours} hours</p>` : '';
+    const hoursHtml = Number(project.hours) > 0 ? `<p><strong>Time spent:</strong> ${project.hours} hrs</p>` : '';
     const videoLinkHtml = project.youtube_url ? ` | <a href="${escapeHtml(project.youtube_url)}" target="_blank">View Video</a>` : '';
 
     card.innerHTML = `
@@ -354,33 +385,132 @@ if (isDashboard) {
       <h3>${escapeHtml(project.title)}</h3>
       <p><strong>Software:</strong> ${escapeHtml(project.software)}</p>
       ${hoursHtml}
-      <p><strong>Status:</strong> ${escapeHtml(statusLabel)}</p>
+      <p><strong>Status:</strong> <span style="color: ${statusColor}; font-weight: 600;">${escapeHtml(statusLabel)}</span></p>
       <a href="${projectPageUrl}" target="_blank">🎬 View Film Page</a>${videoLinkHtml}
     `;
 
-    listEl.prepend(card);
+    return card;
   }
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  function updateDashboardStats(userData, projects) {
+    const chips = (userData && userData.anichips !== undefined && userData.anichips !== null) ? Number(userData.anichips) : 0;
+    const statChipsEl = document.getElementById('stats-anichips');
+    if (statChipsEl) {
+      statChipsEl.textContent = chips;
+    }
+    const navChipsEl = document.getElementById('anichips-balance');
+    if (navChipsEl) {
+      navChipsEl.textContent = chips;
+    }
+
+    const projectList = Array.isArray(projects) ? projects : [];
+    const totalHours = projectList.reduce((acc, p) => acc + (parseFloat(p.hours) || 0), 0);
+    const formattedHours = Number.isInteger(totalHours) ? totalHours : (Math.round(totalHours * 10) / 10);
+    const statHoursEl = document.getElementById('stats-total-hours');
+    if (statHoursEl) {
+      statHoursEl.textContent = formattedHours;
+    }
+
+    const statCountEl = document.getElementById('stats-animations-count');
+    if (statCountEl) {
+      statCountEl.textContent = projectList.length;
+    }
   }
 
-  // Load user projects if logged in
-  if (token) {
-    fetch('https://absolute-cinema-manager.hackclub.app/api/my-projects', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    .then(r => r.ok ? r.json() : [])
-    .then(projects => {
-      if (Array.isArray(projects) && projects.length > 0) {
-        const listEl = document.getElementById('animation-list');
-        if (listEl) {
-          listEl.innerHTML = '';
-          projects.forEach(p => addProjectCardToDashboard(p));
+  let lastProjectsJson = null;
+
+  function renderDashboardProjects(projects) {
+    const listEl = document.getElementById('animation-list');
+    if (!listEl) return;
+
+    const currentJson = JSON.stringify(projects || []);
+    if (currentJson === lastProjectsJson) {
+      return;
+    }
+    lastProjectsJson = currentJson;
+
+    listEl.innerHTML = '';
+    if (!Array.isArray(projects) || projects.length === 0) {
+      listEl.innerHTML = '<p style="color: #94a3b8;">You have no films cooked yet!</p>';
+      return;
+    }
+
+    projects.forEach(p => {
+      listEl.appendChild(createProjectCard(p));
+    });
+  }
+
+  function addProjectCardToDashboard(project) {
+    if (!project) return;
+    refreshDashboardData();
+  }
+
+  let isRefreshing = false;
+
+  async function refreshDashboardData() {
+    const currentToken = localStorage.getItem('cinema_session') || token;
+    if (!currentToken) return;
+    if (isRefreshing) return;
+    isRefreshing = true;
+
+    try {
+      const [meRes, projRes] = await Promise.all([
+        fetch('https://absolute-cinema-manager.hackclub.app/api/me', {
+          headers: { 'Authorization': `Bearer ${currentToken}` },
+          cache: 'no-store'
+        }),
+        fetch('https://absolute-cinema-manager.hackclub.app/api/my-projects', {
+          headers: { 'Authorization': `Bearer ${currentToken}` },
+          cache: 'no-store'
+        })
+      ]);
+
+      if (!meRes.ok) {
+        if (meRes.status === 401 || meRes.status === 403) {
+          localStorage.removeItem('cinema_session');
+          window.location.replace('/');
         }
+        return;
       }
-    })
-    .catch(() => {});
+
+      const userData = await meRes.json();
+      let projects = [];
+      if (projRes.ok) {
+        try {
+          const parsed = await projRes.json();
+          if (Array.isArray(parsed)) projects = parsed;
+        } catch (_) {}
+      }
+
+      window.currentUser = userData;
+      const role = userData.role || (userData.isAdmin ? "admin" : "participant");
+      window.userRole = role;
+
+      const usernameEl = document.getElementById('username-display');
+      if (usernameEl) {
+        usernameEl.innerText = userData.name || userData.email || "Creator";
+      }
+
+      const canReview = role === "reviewer" || role === "admin";
+      const canAdmin = role === "admin";
+      const reviewLink = document.getElementById("review-nav-link");
+      if (reviewLink) reviewLink.style.display = canReview ? "flex" : "none";
+      const adminLink = document.getElementById("admin-nav-link");
+      if (adminLink) adminLink.style.display = canAdmin ? "flex" : "none";
+
+      updateDashboardStats(userData, projects);
+      renderDashboardProjects(projects);
+    } catch (err) {
+    } finally {
+      isRefreshing = false;
+    }
   }
+
+  refreshDashboardData();
+  setInterval(refreshDashboardData, 3000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      refreshDashboardData();
+    }
+  });
 }
