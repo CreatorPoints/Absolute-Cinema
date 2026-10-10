@@ -1,13 +1,14 @@
-const token = localStorage.getItem('cinema_session');
-const isLocalDevelopment =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1" ||
-  window.location.hostname === "0.0.0.0" ||
-  window.location.hostname === "[::1]" ||
-  window.location.hostname.endsWith(".local") ||
-  window.location.protocol === "file:";
+(() => {
+  const token = localStorage.getItem('cinema_session');
+  const isLocalDevelopment =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "0.0.0.0" ||
+    window.location.hostname === "[::1]" ||
+    window.location.hostname.endsWith(".local") ||
+    window.location.protocol === "file:";
 
-let currentFilmData = null;
+  let currentFilmData = null;
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -509,3 +510,4 @@ window.addEventListener("DOMContentLoaded", () => {
   const shareBtn = document.getElementById("share-btn");
   if (shareBtn) shareBtn.addEventListener("click", copyProjectLink);
 });
+})();

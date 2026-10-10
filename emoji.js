@@ -210,24 +210,17 @@
     }
 
     try {
-      const backendUrls = [
-        "https://absolute-cinema-manager.hackclub.app/api/emojis",
-        "/api/emojis"
-      ];
-      for (const url of backendUrls) {
-        try {
-          const res = await fetch(url, { cache: "no-store" });
-          if (res.ok) {
-            const customData = await res.json();
-            if (customData && typeof customData === "object") {
-              emojiDict = { ...emojiDict, ...customData };
-              localStorage.setItem(cacheKey, JSON.stringify(customData));
-              localStorage.setItem(cacheTimeKey, Date.now().toString());
-              renderDocument();
-              break;
-            }
-          }
-        } catch (_) {}
+      const res = await fetch("https://absolute-cinema-manager.hackclub.app/api/emojis");
+      if (res.ok) {
+        const customData = await res.json();
+        if (customData && typeof customData === "object") {
+          emojiDict = { ...emojiDict, ...customData };
+          try {
+            localStorage.setItem(cacheKey, JSON.stringify(customData));
+            localStorage.setItem(cacheTimeKey, Date.now().toString());
+          } catch (_) {}
+          renderDocument();
+        }
       }
     } catch (_) {}
   }
