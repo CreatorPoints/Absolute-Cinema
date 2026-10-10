@@ -213,12 +213,9 @@ if (isDashboard) {
       }
 
       const payload = {
-        title: document.getElementById('film-title')?.value,
-        youtubeUrl: document.getElementById('film-youtube-url')?.value,
-        timelapseUrl: document.getElementById('film-timelapse-url')?.value,
-        software: document.getElementById('film-software')?.value,
-        hours: document.getElementById('film-hours')?.value,
-        notes: document.getElementById('film-notes')?.value
+        title: document.getElementById('film-title')?.value?.trim(),
+        software: document.getElementById('film-software')?.value?.trim(),
+        notes: document.getElementById('film-notes')?.value?.trim() || ''
       };
 
       try {
@@ -268,13 +265,15 @@ if (isDashboard) {
 
     const card = document.createElement('article');
     card.className = 'animation-card';
+    const hoursHtml = project.hours ? `<p><strong>Time spent:</strong> ${project.hours} hours</p>` : '';
+    const videoLinkHtml = project.youtube_url ? ` | <a href="${escapeHtml(project.youtube_url)}" target="_blank">View Video</a>` : '';
+
     card.innerHTML = `
       <h3>${escapeHtml(project.title)}</h3>
       <p><strong>Software:</strong> ${escapeHtml(project.software)}</p>
-      <p><strong>Time spent:</strong> ${project.hours} hours</p>
+      ${hoursHtml}
       <p><strong>Status:</strong> ${escapeHtml(project.status || 'Submitted')}</p>
-      <a href="${projectPageUrl}" target="_blank">🎬 View Film Page</a> |
-      <a href="${project.youtube_url}" target="_blank">View Video</a>
+      <a href="${projectPageUrl}" target="_blank">🎬 View Film Page</a>${videoLinkHtml}
     `;
 
     listEl.prepend(card);

@@ -287,17 +287,27 @@
           document.getElementById("project-title").innerText = data.title;
           document.getElementById("meta-author").innerText = `👤 ${data.author_name || "Creator"}`;
           document.getElementById("meta-software").innerText = `🛠️ ${data.software}`;
-          document.getElementById("meta-hours").innerText = `⏱️ ${data.hours} hrs`;
+          const hoursEl = document.getElementById("meta-hours");
+          if (hoursEl) {
+            if (data.hours) {
+              hoursEl.innerText = `⏱️ ${data.hours} hrs`;
+            } else {
+              hoursEl.style.display = "none";
+            }
+          }
           document.getElementById("meta-status").innerText = `Status: ${data.status || "Submitted"}`;
           document.getElementById("project-notes").innerText = data.notes || "No notes provided.";
 
           // Video Embed
           const ytId = extractYoutubeId(data.youtube_url);
           const videoFrame = document.getElementById("video-frame");
+          const videoWrapper = document.querySelector(".video-wrapper");
           if (ytId) {
             videoFrame.src = `https://www.youtube-nocookie.com/embed/${ytId}?rel=0`;
-          } else {
+          } else if (data.youtube_url) {
             videoFrame.src = data.youtube_url;
+          } else if (videoWrapper) {
+            videoWrapper.style.display = "none";
           }
 
           // Timelapse Button
