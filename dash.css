@@ -786,3 +786,85 @@ footer a:hover {
   object-fit: contain;
   margin: 0 0.05em;
 }
+
+/* ==========================================================================
+   Review Desk Styles
+   ========================================================================== */
+.review-card {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 18px;
+  transition: border-color 0.2s;
+}
+
+.review-card:hover {
+  border-color: rgba(77, 163, 255, 0.3);
+}
+
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.review-card-title {
+  font-size: 18px;
+  color: #f8fafc;
+  margin: 0;
+  font-family: 'Michroma', sans-serif;
+}
+
+.review-card-meta {
+  color: #94a3b8;
+  font-size: 13px;
+  margin: 4px 0 12px 0;
+}
+
+.review-actions-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.btn-approve {
+  background: #22c55e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-approve:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+.btn-decline {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn-decline:hover {
+  background: rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}

@@ -239,7 +239,7 @@ if (isDashboard) {
           ? `/project.html?uid=${data.uid}`
           : data.url;
 
-        alert(`🎉 Film project created successfully!\n\nView film showcase:\n${targetShowcaseUrl}`);
+        alert(`🎉 Film created successfully!\n\nView film:\n${targetShowcaseUrl}`);
 
         addProjectCardToDashboard(data.project);
         submissionForm.reset();
@@ -263,16 +263,22 @@ if (isDashboard) {
       ? `/project.html?uid=${project.uid}` 
       : `/projects/${project.uid}`;
 
+    const rawStatus = (project.status || "design").toLowerCase();
+    let statusLabel = "Design";
+    if (rawStatus === "submitted") statusLabel = "Pending Review";
+    if (rawStatus === "approved") statusLabel = "Approved";
+    if (rawStatus === "declined") statusLabel = "Declined";
+
     const card = document.createElement('article');
     card.className = 'animation-card';
-    const hoursHtml = project.hours ? `<p><strong>Time spent:</strong> ${project.hours} hours</p>` : '';
+    const hoursHtml = Number(project.hours) > 0 ? `<p><strong>Time spent:</strong> ${project.hours} hours</p>` : '';
     const videoLinkHtml = project.youtube_url ? ` | <a href="${escapeHtml(project.youtube_url)}" target="_blank">View Video</a>` : '';
 
     card.innerHTML = `
       <h3>${escapeHtml(project.title)}</h3>
       <p><strong>Software:</strong> ${escapeHtml(project.software)}</p>
       ${hoursHtml}
-      <p><strong>Status:</strong> ${escapeHtml(project.status || 'Submitted')}</p>
+      <p><strong>Status:</strong> ${escapeHtml(statusLabel)}</p>
       <a href="${projectPageUrl}" target="_blank">🎬 View Film Page</a>${videoLinkHtml}
     `;
 
