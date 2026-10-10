@@ -169,12 +169,13 @@ function initIndexEmailHandler() {
         const data = await res.json();
         if (data && data.sessionId) {
           localStorage.setItem("cinema_session", data.sessionId);
+          window.location.replace(targetDashboard);
+          return;
         }
       } catch (err) {
         console.warn("Session check error:", err);
-      } finally {
-        window.location.replace(targetDashboard);
       }
+      window.location.href = "https://absolute-cinema-manager.hackclub.app/login";
     }
   }
 
