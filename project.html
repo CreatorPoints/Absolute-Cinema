@@ -40,6 +40,10 @@
       </div>
 
       <div id="project-content" style="display: none;">
+        <div id="project-banner-wrapper" class="project-banner-wrapper" style="display: none;">
+          <img id="project-banner-image" class="project-banner-image" src="" alt="Film Banner">
+        </div>
+
         <div class="video-wrapper" id="video-container">
           <iframe id="video-frame" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
         </div>
@@ -75,9 +79,6 @@
         </div>
 
         <div class="film-actions-row" style="margin-bottom: 28px;">
-          <a id="timelapse-link" href="#" target="_blank" rel="noopener noreferrer" class="action-btn btn-primary" style="display: none;">
-            👁️ View Timelapse Proof
-          </a>
           <button id="share-btn" type="button" class="action-btn btn-secondary">
             🔗 Share Film Link
           </button>
@@ -123,8 +124,8 @@
             <input type="url" id="config-film-youtube" placeholder="https://www.youtube.com/watch?v=...">
           </div>
           <div class="form-group">
-            <label for="config-film-timelapse">Timelapse Proof URL</label>
-            <input type="url" id="config-film-timelapse" placeholder="https://youtube.com/... or cloud link">
+            <label for="config-film-banner">Image Banner URL</label>
+            <input type="url" id="config-film-banner" placeholder="https://... (direct image link for film banner)">
           </div>
           <div class="modal-actions">
             <button type="button" id="close-configure-modal" class="cancel-modal-btn">Cancel</button>

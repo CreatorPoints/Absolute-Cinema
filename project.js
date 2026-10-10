@@ -130,14 +130,13 @@ function renderFilmData(data) {
     if (videoWrapper) videoWrapper.style.display = "none";
   }
 
-  const timelapseLink = document.getElementById("timelapse-link");
-  if (timelapseLink) {
-    if (data.timelapse_url) {
-      timelapseLink.href = data.timelapse_url;
-      timelapseLink.style.display = "inline-flex";
-    } else {
-      timelapseLink.style.display = "none";
-    }
+  const bannerWrapper = document.getElementById("project-banner-wrapper");
+  const bannerImg = document.getElementById("project-banner-image");
+  if (data.banner_url) {
+    if (bannerImg) bannerImg.src = data.banner_url;
+    if (bannerWrapper) bannerWrapper.style.display = "block";
+  } else {
+    if (bannerWrapper) bannerWrapper.style.display = "none";
   }
 
   const canEdit = !!data.can_edit;
@@ -253,8 +252,8 @@ function openConfigureModal() {
   const ytInput = document.getElementById("config-film-youtube");
   if (ytInput) ytInput.value = currentFilmData.youtube_url || "";
 
-  const lapseInput = document.getElementById("config-film-timelapse");
-  if (lapseInput) lapseInput.value = currentFilmData.timelapse_url || "";
+  const bannerInput = document.getElementById("config-film-banner");
+  if (bannerInput) bannerInput.value = currentFilmData.banner_url || "";
 
   modal.classList.add("active");
   document.body.style.overflow = "hidden";
@@ -285,7 +284,7 @@ async function handleConfigureSubmit(e) {
     software: document.getElementById("config-film-software")?.value?.trim(),
     notes: document.getElementById("config-film-notes")?.value?.trim() || "",
     youtubeUrl: document.getElementById("config-film-youtube")?.value?.trim() || "",
-    timelapseUrl: document.getElementById("config-film-timelapse")?.value?.trim() || ""
+    bannerUrl: document.getElementById("config-film-banner")?.value?.trim() || ""
   };
 
   try {

@@ -45,9 +45,18 @@
         <hr>
         <main>
           <section class="review-desk">
-            <h2>Pending Submissions</h2>
-            <div id="review-list">
+            <div class="review-category-header">
+              <h2><span>Pending Submissions</span> <span id="pending-count-badge" class="review-count-badge">0</span></h2>
+            </div>
+            <div id="pending-review-list">
               <p style="color: #94a3b8; font-size: 14px;">Loading submissions for review...</p>
+            </div>
+
+            <div class="review-category-header">
+              <h2><span>Reviewed Films</span> <span id="reviewed-count-badge" class="review-count-badge">0</span></h2>
+            </div>
+            <div id="reviewed-list">
+              <p style="color: #94a3b8; font-size: 14px;">Loading reviewed films...</p>
             </div>
           </section>
         </main>

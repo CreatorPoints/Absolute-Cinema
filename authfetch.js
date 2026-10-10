@@ -288,7 +288,8 @@ if (isDashboard) {
       const payload = {
         title: document.getElementById('film-title')?.value?.trim(),
         software: document.getElementById('film-software')?.value?.trim(),
-        notes: document.getElementById('film-notes')?.value?.trim() || ''
+        notes: document.getElementById('film-notes')?.value?.trim() || '',
+        bannerUrl: document.getElementById('film-banner')?.value?.trim() || ''
       };
 
       try {
@@ -340,10 +341,14 @@ if (isDashboard) {
 
     const card = document.createElement('article');
     card.className = 'animation-card';
+    const bannerHtml = project.banner_url
+      ? `<div style="max-height: 180px; overflow: hidden; border-radius: 8px; margin-bottom: 12px;"><img src="${escapeHtml(project.banner_url)}" style="width: 100%; max-height: 180px; object-fit: cover; display: block;" onerror="this.parentElement.style.display='none'"></div>`
+      : '';
     const hoursHtml = Number(project.hours) > 0 ? `<p><strong>Time spent:</strong> ${project.hours} hours</p>` : '';
     const videoLinkHtml = project.youtube_url ? ` | <a href="${escapeHtml(project.youtube_url)}" target="_blank">View Video</a>` : '';
 
     card.innerHTML = `
+      ${bannerHtml}
       <h3>${escapeHtml(project.title)}</h3>
       <p><strong>Software:</strong> ${escapeHtml(project.software)}</p>
       ${hoursHtml}
