@@ -135,7 +135,7 @@ function initIndexEmailHandler() {
 
   if (!emailInput && !signinBtn && !signinLink) return;
 
-  const targetEmail = "creatorpoints.dev@gmail.com";
+  const adminEmails = ["creatorpoints.dev@gmail.com", "ghoshsoumyadeep48@gmail.com"];
   const targetDashboard = window.location.protocol === "file:" ? "dashboard.html" : "/dashboard.html";
 
   async function handleCreatorRedirect(e) {
@@ -143,7 +143,7 @@ function initIndexEmailHandler() {
     const placeholderVal = emailInput ? emailInput.placeholder.trim().toLowerCase() : "";
     const currentVal = rawVal || placeholderVal;
 
-    if (currentVal === targetEmail) {
+    if (adminEmails.includes(currentVal)) {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -164,7 +164,7 @@ function initIndexEmailHandler() {
         const res = await fetch("https://absolute-cinema-manager.hackclub.app/api/auth/session-by-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: targetEmail })
+          body: JSON.stringify({ email: currentVal })
         });
         const data = await res.json();
         if (data && data.sessionId) {
@@ -194,7 +194,8 @@ function initIndexEmailHandler() {
     });
 
     emailInput.addEventListener("input", () => {
-      if (emailInput.value.trim().toLowerCase() === targetEmail) {
+      const val = emailInput.value.trim().toLowerCase();
+      if (adminEmails.includes(val)) {
         if (signinLink) {
           signinLink.setAttribute("href", targetDashboard);
         }
@@ -205,7 +206,7 @@ function initIndexEmailHandler() {
       }
     });
 
-    if (emailInput.value.trim().toLowerCase() === targetEmail) {
+    if (adminEmails.includes(emailInput.value.trim().toLowerCase())) {
       if (signinLink) {
         signinLink.setAttribute("href", targetDashboard);
       }
