@@ -378,7 +378,7 @@ if (isDashboard) {
       ? `<div style="max-height: 180px; overflow: hidden; border-radius: 8px; margin-bottom: 12px;"><img src="${escapeHtml(project.banner_url)}" style="width: 100%; max-height: 180px; object-fit: cover; display: block;" onerror="this.parentElement.style.display='none'"></div>`
       : '';
     const hoursHtml = Number(project.hours) > 0 ? `<p><strong>Time spent:</strong> ${project.hours} hrs</p>` : '';
-    const videoLinkHtml = project.youtube_url ? ` | <a href="${escapeHtml(project.youtube_url)}" target="_blank">View Video</a>` : '';
+    const videoLinkHtml = project.youtube_url ? ` | <a href="${escapeHtml(project.youtube_url)}">View Video</a>` : '';
 
     card.innerHTML = `
       ${bannerHtml}
@@ -386,7 +386,7 @@ if (isDashboard) {
       <p><strong>Software:</strong> ${escapeHtml(project.software)}</p>
       ${hoursHtml}
       <p><strong>Status:</strong> <span style="color: ${statusColor}; font-weight: 600;">${escapeHtml(statusLabel)}</span></p>
-      <a href="${projectPageUrl}" target="_blank">🎬 View Film Page</a>${videoLinkHtml}
+      <a href="${projectPageUrl}">🎬 View Film Page</a>${videoLinkHtml}
     `;
 
     return card;

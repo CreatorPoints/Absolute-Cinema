@@ -204,7 +204,7 @@
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span class="meta-badge badge-status ${badgeClass}" id="badge-${p.uid}">${statusLabel}</span>
-            <a href="${filmUrl}" target="_blank" class="sidebar-link" style="padding: 6px 12px; font-size: 12px; width: auto;">🎬 Showcase</a>
+            <a href="${filmUrl}" class="sidebar-link" style="padding: 6px 12px; font-size: 12px; width: auto;">🎬 Showcase</a>
           </div>
         </div>
 

@@ -33,6 +33,13 @@
   border: 1px solid rgba(77, 163, 255, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(77, 163, 255, 0.15);
   margin-bottom: 30px;
+  animation: videoProjectorGlow 6s ease-in-out infinite;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.video-wrapper:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 35px rgba(77, 163, 255, 0.3);
 }
 
 .video-wrapper iframe {
@@ -271,11 +278,14 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   padding: 22px;
-  transition: border-color 0.2s;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: devlogSlideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .devlog-card:hover {
-  border-color: rgba(77, 163, 255, 0.25);
+  border-color: rgba(77, 163, 255, 0.4);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
 }
 
 .devlog-card-header {
@@ -308,6 +318,11 @@
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
+  transition: transform 0.2s ease;
+}
+
+.devlog-hours-badge:hover {
+  transform: scale(1.05);
 }
 
 .devlog-date {
@@ -340,10 +355,12 @@
   font-size: 13px;
   text-decoration: none;
   font-weight: 500;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .devlog-lapse-link:hover {
   text-decoration: underline;
+  transform: translateX(4px);
 }
 
 .devlog-delete-btn {
@@ -354,7 +371,17 @@
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
-  transition: color 0.2s, background 0.2s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.devlog-delete-btn:hover {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  transform: scale(1.08);
+}
+
+.devlog-delete-btn:active {
+  transform: scale(0.94);
 }
 
 .devlog-delete-btn:hover {
@@ -405,6 +432,13 @@
   border: 1px solid rgba(77, 163, 255, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(77, 163, 255, 0.15);
   margin-bottom: 25px;
+  animation: videoProjectorGlow 6s ease-in-out infinite;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-banner-wrapper:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 35px rgba(77, 163, 255, 0.3);
 }
 
 .project-banner-image {
@@ -412,4 +446,34 @@
   max-height: 380px;
   object-fit: cover;
   display: block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-banner-wrapper:hover .project-banner-image {
+  transform: scale(1.04);
+}
+
+/* ==========================================================================
+   Project Showcase Keyframes Suite
+   ========================================================================== */
+@keyframes videoProjectorGlow {
+  0%, 100% {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(77, 163, 255, 0.15);
+    border-color: rgba(77, 163, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.6), 0 0 32px rgba(77, 163, 255, 0.35);
+    border-color: rgba(77, 163, 255, 0.45);
+  }
+}
+
+@keyframes devlogSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

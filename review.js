@@ -117,7 +117,7 @@
         </div>
 
         <div class="review-actions-row">
-          <a href="${filmUrl}" target="_blank" class="sidebar-link" style="padding: 8px 14px; font-size: 13px; width: auto;">🎬 Inspect Film Showcase</a>
+          <a href="${filmUrl}" class="sidebar-link" style="padding: 8px 14px; font-size: 13px; width: auto;">🎬 Inspect Film Showcase</a>
           <button type="button" id="btn-approve-${p.uid}" class="btn-approve" onclick="submitReviewAction('${p.uid}', 'approved')">✓ Approve Film</button>
           <button type="button" id="btn-decline-${p.uid}" class="btn-decline" onclick="submitReviewAction('${p.uid}', 'declined')">✗ Decline</button>
         </div>
@@ -169,7 +169,7 @@
         </div>
 
         <div class="review-actions-row">
-          <a href="${filmUrl}" target="_blank" class="sidebar-link" style="padding: 8px 14px; font-size: 13px; width: auto;">🎬 Inspect Film Showcase</a>
+          <a href="${filmUrl}" class="sidebar-link" style="padding: 8px 14px; font-size: 13px; width: auto;">🎬 Inspect Film Showcase</a>
           <span style="color: #64748b; font-size: 12px; margin-left: auto;">🔒 Reviewed</span>
         </div>
       </article>

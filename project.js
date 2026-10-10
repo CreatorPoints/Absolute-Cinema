@@ -211,7 +211,7 @@ function renderDevlogs(devlogs, canEdit) {
     });
     const hoursText = Number(log.hours) > 0 ? `+${log.hours} hrs` : "0 hrs";
     const lapseLinkHtml = log.lapse_url
-      ? `<a href="${escapeHtml(log.lapse_url)}" target="_blank" rel="noopener noreferrer" class="devlog-lapse-link">📹 View Timelapse</a>`
+      ? `<a href="${escapeHtml(log.lapse_url)}" class="devlog-lapse-link">📹 View Timelapse</a>`
       : `<span></span>`;
     const deleteBtnHtml = canEdit
       ? `<button type="button" class="devlog-delete-btn" onclick="deleteDevlog('${escapeHtml(log.uid || log.id)}')">Delete</button>`
