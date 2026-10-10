@@ -18,53 +18,10 @@ const isProfile = window.location.pathname.includes("profile");
 const isReview = window.location.pathname.includes("review");
 const isAdminPage = window.location.pathname.includes("admin");
 const isAppPage = isDashboard || isShop || isProfile || isReview || isAdminPage;
-const isLocalDevelopment =
-  window.location.hostname === "localhost" ||
-  window.location.hostname === "127.0.0.1" ||
-  window.location.hostname === "0.0.0.0" ||
-  window.location.hostname === "[::1]" ||
-  window.location.hostname.endsWith(".local") ||
-  window.location.protocol === "file:";
-
-// Set username helper for dashboard UI during local development
-function setDevUsername() {
-  window.currentUser = { name: "Developer", role: "admin", isAdmin: true, isReviewer: true, anichips: 0 };
-  window.userRole = "admin";
-  const usernameEl = document.getElementById("username-display");
-  if (usernameEl && (usernameEl.innerText === "..." || !usernameEl.innerText)) {
-    usernameEl.innerText = "Developer";
-  }
-  const anichipsEl = document.getElementById("anichips-balance");
-  if (anichipsEl && (!anichipsEl.innerText || anichipsEl.innerText === "0")) {
-    anichipsEl.innerText = "0";
-  }
-  const reviewLink = document.getElementById("review-nav-link");
-  if (reviewLink) {
-    reviewLink.style.display = "flex";
-  }
-  const adminLink = document.getElementById("admin-nav-link");
-  if (adminLink) {
-    adminLink.style.display = "flex";
-  }
-}
-
-// Allow direct navigation to dashboard from home page during local development
-if (isLocalDevelopment && !isAppPage) {
-  const signinLink = document.querySelector(".registration a");
-  if (signinLink) {
-    signinLink.setAttribute("href", "dashboard.html");
-  }
-}
 
 if (!token) {
-  // If there's absolutely no token, and they are trying to peek at protected app pages, boot them (unless in local development).
-  if (isAppPage && !isLocalDevelopment) {
+  if (isAppPage) {
     window.location.replace("/");
-  } else {
-    console.log(isLocalDevelopment ? "Local development mode: Access granted." : "No active session found. Waiting for user login.");
-    if (isAppPage) {
-      setDevUsername();
-    }
   }
 } else {
   // 3. We have a token! Ask the backend who we are.
@@ -77,13 +34,9 @@ if (!token) {
   })
   .then(response => {
     if (!response.ok) {
-      // If the backend says the token is dead, delete it and kick them out (unless in local development)
       localStorage.removeItem('cinema_session');
-      if (isAppPage && !isLocalDevelopment) {
+      if (isAppPage) {
         window.location.replace("/");
-      }
-      if (isAppPage && isLocalDevelopment) {
-        setDevUsername();
       }
       throw new Error("Session invalid or expired.");
     }
@@ -96,8 +49,8 @@ if (!token) {
     window.currentUser = userData;
     window.userRole = role;
 
-    const canReview = role === "reviewer" || role === "admin" || isLocalDevelopment;
-    const canAdmin = role === "admin" || isLocalDevelopment;
+    const canReview = role === "reviewer" || role === "admin";
+    const canAdmin = role === "admin";
 
     const isHomePage =
       window.location.pathname === "/" ||
@@ -139,9 +92,6 @@ if (!token) {
   })
   .catch(error => {
     console.error("Auth status:", error.message);
-    if (isAppPage && isLocalDevelopment) {
-      setDevUsername();
-    }
   });
 }
 
@@ -235,9 +185,7 @@ if (isDashboard) {
           throw new Error(data.error || 'Failed to create project');
         }
 
-        const targetShowcaseUrl = isLocalDevelopment 
-          ? `/project.html?uid=${data.uid}`
-          : data.url;
+        const targetShowcaseUrl = data.url || `/projects/${data.uid}`;
 
         alert(`🎉 Film created successfully!\n\nView film:\n${targetShowcaseUrl}`);
 
@@ -259,9 +207,7 @@ if (isDashboard) {
     const listEl = document.getElementById('animation-list');
     if (!listEl || !project) return;
 
-    const projectPageUrl = isLocalDevelopment 
-      ? `/project.html?uid=${project.uid}` 
-      : `/projects/${project.uid}`;
+    const projectPageUrl = `/projects/${project.uid}`;
 
     const rawStatus = (project.status || "design").toLowerCase();
     let statusLabel = "Design";

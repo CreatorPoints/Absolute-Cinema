@@ -1,12 +1,5 @@
 (() => {
   const token = localStorage.getItem('cinema_session');
-  const isLocalDevelopment =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "0.0.0.0" ||
-    window.location.hostname === "[::1]" ||
-    window.location.hostname.endsWith(".local") ||
-    window.location.protocol === "file:";
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -68,7 +61,7 @@
         const totalHours = Number(p.hours) || 0;
         const devlogCount = p.devlog_count !== undefined ? p.devlog_count : 0;
         const authorText = p.author_name || p.author_email || "Creator";
-        const filmUrl = isLocalDevelopment ? `/project.html?uid=${p.uid}` : `/projects/${p.uid}`;
+        const filmUrl = `/projects/${p.uid}`;
 
         const reviewActionsHtml = `
           <div class="review-actions-row">

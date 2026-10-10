@@ -1,13 +1,5 @@
 (() => {
   const token = localStorage.getItem('cinema_session');
-  const isLocalDevelopment =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "0.0.0.0" ||
-    window.location.hostname === "[::1]" ||
-    window.location.hostname.endsWith(".local") ||
-    window.location.protocol === "file:";
-
   let currentFilmData = null;
 
 function escapeHtml(str) {
@@ -148,7 +140,7 @@ function renderFilmData(data) {
     }
   }
 
-  const canEdit = !!data.can_edit || isLocalDevelopment;
+  const canEdit = !!data.can_edit;
   const actionsCard = document.getElementById("film-actions-card");
   if (actionsCard) {
     actionsCard.style.display = canEdit ? "block" : "none";
