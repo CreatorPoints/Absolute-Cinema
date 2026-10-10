@@ -69,11 +69,11 @@
                   <thead>
                     <tr>
                       <th>ID</th>
-                      <th>Name</th>
-                      <th>Email</th>
+                      <th>User</th>
                       <th>Role</th>
                       <th>AniChips</th>
-                      <th>Joined</th>
+                      <th>Films</th>
+                      <th>Save</th>
                     </tr>
                   </thead>
                   <tbody id="users-table-body">
@@ -96,6 +96,20 @@
         </footer>
       </div>
     </div>
+
+    <div id="user-films-modal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+          <h2 id="modal-user-films-title">Films by Creator</h2>
+          <button type="button" id="close-user-films-x" class="modal-close-x" aria-label="Close modal">&times;</button>
+        </div>
+        <p id="modal-user-films-subtitle" class="modal-subtitle">Manage projects, edit info, provide feedback, or award Absolute Cinema.</p>
+        <div id="user-films-list" style="margin-top: 15px;">
+          <p style="color: #94a3b8; text-align: center; padding: 20px;">Loading films...</p>
+        </div>
+      </div>
+    </div>
+
     <script src="emoji.js"></script>
     <script src="authfetch.js"></script>
     <script src="admin.js"></script>

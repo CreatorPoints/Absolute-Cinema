@@ -185,6 +185,7 @@ function renderStatusBadge(status) {
   if (rawStatus === "submitted") label = "Pending Review";
   if (rawStatus === "approved") label = "Approved";
   if (rawStatus === "declined") label = "Declined";
+  if (rawStatus === "absolute_cinema") label = "Absolute Cinema 🎬✨";
 
   badgeEl.innerText = `Status: ${label}`;
 }
