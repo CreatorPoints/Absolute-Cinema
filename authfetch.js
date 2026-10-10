@@ -159,6 +159,7 @@ function initIndexEmailHandler() {
 
       const activeToken = localStorage.getItem("cinema_session");
       if (activeToken) {
+        localStorage.setItem("cinema_new_arrival", "true");
         window.location.replace(targetDashboard);
         return;
       }
@@ -177,12 +178,14 @@ function initIndexEmailHandler() {
         const data = await res.json();
         if (data && data.sessionId) {
           localStorage.setItem("cinema_session", data.sessionId);
+          localStorage.setItem("cinema_new_arrival", "true");
           window.location.replace(targetDashboard);
           return;
         }
       } catch (err) {
         console.warn("Session check error:", err);
       }
+      localStorage.setItem("cinema_new_arrival", "true");
       window.location.href = "https://absolute-cinema-manager.hackclub.app/login";
     }
   }
@@ -383,11 +386,26 @@ if (isDashboard) {
 
         submissionForm.reset();
         closeFilmModal();
+        if (window.florkNotify) {
+          window.florkNotify({
+            message: `"${payload.title || 'Your film'}" was submitted! Let's cook! 🎬`,
+            pose: 'Morejoy.png',
+            title: 'Film Submitted!'
+          });
+        }
         await refreshDashboardData();
       } catch (err) {
         if (feedbackMsg) {
           feedbackMsg.textContent = err.message || 'Error creating film';
           feedbackMsg.style.display = 'block';
+        }
+        if (window.florkNotify) {
+          window.florkNotify({
+            message: err.message || 'Error creating film',
+            pose: 'Standing-bruh.png',
+            title: 'Submission Error',
+            type: 'error'
+          });
         }
       } finally {
         if (submitBtn) {
@@ -501,12 +519,24 @@ if (isDashboard) {
     }
   }
 
+  let lastKnownChips = null;
+
   function updateDashboardStats(userData, projects) {
     const chips = (userData && userData.anichips !== undefined && userData.anichips !== null) ? Number(userData.anichips) : 0;
     const navChipsEl = document.getElementById('anichips-balance');
     if (navChipsEl) {
       animateStatNumber(navChipsEl, chips, 1200, false);
     }
+
+    if (lastKnownChips !== null && chips > lastKnownChips && window.florkNotify) {
+      const diff = chips - lastKnownChips;
+      window.florkNotify({
+        message: `You earned +${diff} AniChips! Balance is now ${chips} chips! 🍿`,
+        pose: 'Morejoy.png',
+        title: 'Chips Earned!'
+      });
+    }
+    lastKnownChips = chips;
 
     const projectList = Array.isArray(projects) ? projects : [];
     const totalHours = projectList.reduce((acc, p) => acc + (parseFloat(p.hours) || 0), 0);
@@ -608,6 +638,9 @@ if (isDashboard) {
 
       updateDashboardStats(userData, projects);
       renderDashboardProjects(projects);
+      if (window.initFlorkOnDashboard) {
+        window.initFlorkOnDashboard(userData);
+      }
     } catch (err) {
     } finally {
       isRefreshing = false;
