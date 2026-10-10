@@ -7,6 +7,18 @@ body {
   color: white;
   font-family: 'Poppins', sans-serif;
   margin: 0;
+  position: relative;
+  overflow-x: hidden;
+}
+
+nav,
+.title,
+.registration,
+hr,
+.guide,
+footer {
+  position: relative;
+  z-index: 1;
 }
 
 img {
@@ -231,4 +243,82 @@ footer a:hover {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+/* ==========================================================================
+   Background Marquee (assets/xppen.jpg)
+   ========================================================================== */
+.bg-marquee-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.12;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+.bg-marquee-row {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  user-select: none;
+}
+
+.bg-marquee-content {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 30px;
+  padding-right: 30px;
+  will-change: transform;
+}
+
+.bg-marquee-content img {
+  height: 210px;
+  width: auto;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+}
+
+.marquee-left .bg-marquee-content {
+  animation: bgMarqueeLeft 35s linear infinite;
+}
+
+.marquee-right .bg-marquee-content {
+  animation: bgMarqueeRight 38s linear infinite;
+}
+
+@keyframes bgMarqueeLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes bgMarqueeRight {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .bg-marquee-content img {
+    height: 140px;
+  }
+  .bg-marquee-wrapper {
+    opacity: 0.09;
+  }
 }
