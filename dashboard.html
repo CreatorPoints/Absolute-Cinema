@@ -108,11 +108,10 @@
         </div>
 
         <main>
-          <!-- VIP Admit One Ticket Stub Card -->
+          <!-- VIP Admit One Ticket Stub Card (Driven by assets/ticket.png) -->
           <section class="cinema-ticket-section">
             <div class="cinema-ticket-stub">
               <div class="ticket-part ticket-left">
-                <div class="ticket-cutout cutout-top"></div>
                 <div class="ticket-header-row">
                   <span class="ticket-serial">#AC-PREMIERE-2026</span>
                   <span class="ticket-pass-badge">★ ADMIT ONE ★</span>
@@ -128,30 +127,19 @@
                   </div>
                   <div class="meta-item">
                     <span class="meta-label">LOCATION</span>
-                    <span class="meta-val">MAIN AUDITORIUM</span>
-                  </div>
-                  <div class="meta-item">
-                    <span class="meta-label">ACCESS</span>
-                    <span class="meta-val">ALL SCREENINGS</span>
+                    <span class="meta-val">AUDITORIUM</span>
                   </div>
                   <div class="meta-item">
                     <span class="meta-label">SEAT</span>
-                    <span class="meta-val">BOX A • ROW 1</span>
+                    <span class="meta-val">BOX A • 01</span>
                   </div>
                 </div>
-                <div class="ticket-barcode-wrap">
-                  <div class="barcode-graphic"></div>
-                  <span class="barcode-text">TICKET CODE: ABS-CINEMA-LIVE-PREMIERE</span>
+                <div class="ticket-footer-row">
+                  <span class="ticket-barcode-text">TICKET CODE: ABS-CINEMA-LIVE-PREMIERE</span>
                 </div>
-                <div class="ticket-cutout cutout-bottom"></div>
-              </div>
-
-              <div class="ticket-tear-line">
-                <span></span>
               </div>
 
               <div class="ticket-part ticket-right">
-                <div class="ticket-cutout cutout-top"></div>
                 <div class="stub-cinema-icon">🎟️</div>
                 <span class="stub-label">BOX OFFICE BALANCE</span>
                 <div class="stub-chip-display">
@@ -162,7 +150,6 @@
                 <button class="stub-action-btn open-film-modal-btn">
                   + Book Hall
                 </button>
-                <div class="ticket-cutout cutout-bottom"></div>
               </div>
             </div>
           </section>
@@ -173,33 +160,33 @@
             <span class="stanchion-post right"></span>
           </div>
 
-          <!-- Box Office Dispatch / Stats Board -->
+          <!-- Box Office Dispatch / Stats Board (Image Placeholders) -->
           <section id="box-office" class="stats-overview cinema-rateboard">
             <div class="rateboard-header">
               <span class="rateboard-badge">DISPATCH</span>
               <h2>📋 Box Office Metrics & Board</h2>
             </div>
             <div class="stats-grid rateboard-grid">
-              <div class="stat-card rateboard-card rateboard-chips">
-                <div class="rateboard-card-glow"></div>
-                <span class="rateboard-icon">🪙</span>
-                <h3>AniChips Reserve</h3>
-                <p><strong id="stats-anichips">0</strong> <span class="unit">chips</span></p>
-                <span class="rateboard-hint">Box office earnings</span>
+              <div class="stat-card rateboard-card">
+                <img src="assets/stat-chips.png" alt="AniChips Reserve" class="card-thumb-img">
+                <div class="stat-card-details">
+                  <h3>AniChips Reserve</h3>
+                  <p><strong id="stats-anichips">0</strong> <span class="unit">chips</span></p>
+                </div>
               </div>
-              <div class="stat-card rateboard-card rateboard-hours">
-                <div class="rateboard-card-glow"></div>
-                <span class="rateboard-icon">⏱️</span>
-                <h3>Production Time</h3>
-                <p><strong id="stats-total-hours">0</strong> <span class="unit">hrs</span></p>
-                <span class="rateboard-hint">Footage crafted in studio</span>
+              <div class="stat-card rateboard-card">
+                <img src="assets/stat-hours.png" alt="Production Time" class="card-thumb-img">
+                <div class="stat-card-details">
+                  <h3>Production Time</h3>
+                  <p><strong id="stats-total-hours">0</strong> <span class="unit">hrs</span></p>
+                </div>
               </div>
-              <div class="stat-card rateboard-card rateboard-films">
-                <div class="rateboard-card-glow"></div>
-                <span class="rateboard-icon">📽️</span>
-                <h3>Screenings Booked</h3>
-                <p><strong id="stats-animations-count">0</strong> <span class="unit">films</span></p>
-                <span class="rateboard-hint">Ready for live premiere</span>
+              <div class="stat-card rateboard-card">
+                <img src="assets/stat-films.png" alt="Screenings Booked" class="card-thumb-img">
+                <div class="stat-card-details">
+                  <h3>Screenings Booked</h3>
+                  <p><strong id="stats-animations-count">0</strong> <span class="unit">films</span></p>
+                </div>
               </div>
             </div>
           </section>
@@ -210,12 +197,10 @@
             <span class="stanchion-post right"></span>
           </div>
 
-          <!-- Now Showing / Marquee Theme Board -->
+          <!-- Now Showing / Marquee Theme Board (Image Placeholder) -->
           <section id="feature-theme" class="weekly-theme marquee-theme-board">
             <div class="marquee-board-frame">
-              <div class="marquee-light-row">
-                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-              </div>
+              <img src="assets/theme-banner.png" alt="Feature Presentation" class="theme-banner-img">
               <div class="marquee-board-content">
                 <span class="marquee-season">NOW SHOWING • SEASON 1</span>
                 <h2>WEEK 1 FEATURE PRESENTATION</h2>
