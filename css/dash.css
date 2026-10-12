@@ -1461,312 +1461,930 @@ footer a:hover {
 }
 
 /* ==========================================================================
-   Flork - RPG Dialogue Introducer & Notifier
+   CINEMA HALL RECEPTION & BOX OFFICE THEME
    ========================================================================== */
-body.flork-intro-open {
-  overflow: hidden !important;
-}
 
-.flork-dialogue-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  background: rgba(4, 8, 16, 0.78);
-  backdrop-filter: blur(14px) brightness(0.65);
-  -webkit-backdrop-filter: blur(14px) brightness(0.65);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.flork-dialogue-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.flork-dialogue-card {
-  width: 100%;
-  max-width: 620px;
-  background: rgba(13, 18, 32, 0.96);
-  border: 2px solid rgba(77, 163, 255, 0.6);
-  border-radius: 16px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(77, 163, 255, 0.2);
-  position: relative;
-  padding: 24px;
-  transform: scale(0.94) translateY(16px);
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
-  user-select: none;
-}
-
-.flork-dialogue-overlay.active .flork-dialogue-card {
-  transform: scale(1) translateY(0);
-}
-
-.flork-dialogue-main {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
-}
-
-/* Flork Square Frame */
-.flork-portrait-frame {
-  width: 105px;
-  height: 105px;
-  min-width: 105px;
-  max-width: 105px;
-  aspect-ratio: 1 / 1;
-  background: rgba(8, 12, 22, 0.85);
-  border: 2px solid #38bdf8;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  box-shadow: 0 0 16px rgba(56, 189, 248, 0.25), inset 0 0 14px rgba(0, 0, 0, 0.65);
-  flex-shrink: 0;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.flork-character-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35));
-  transform-origin: bottom center;
-}
-
-.flork-character-img.talking {
-  animation: florkTalk 0.18s ease-in-out infinite alternate;
-}
-
-/* Dialogue Body */
-.flork-dialogue-body {
-  flex: 1;
-  min-width: 0;
-  min-height: 85px;
-  display: flex;
-  align-items: flex-start;
-  position: relative;
-  cursor: pointer;
-  padding-top: 4px;
-}
-
-.flork-dialogue-text {
-  margin: 0;
-  font-family: 'Poppins', sans-serif;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1.65;
-  color: #f8fafc;
-  word-break: break-word;
-}
-
-.flork-rpg-cursor {
-  display: inline-block;
-  color: #38bdf8;
-  font-size: 14px;
-  margin-left: 8px;
-  opacity: 0;
-  vertical-align: baseline;
-  transition: opacity 0.2s ease;
-}
-
-.flork-rpg-cursor.visible {
-  opacity: 1;
-  animation: rpgBounce 0.75s ease-in-out infinite;
-}
-
-/* Only Button, No Extras */
-.flork-dialogue-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 14px;
-}
-
-.flork-btn-next {
-  background: linear-gradient(135deg, #2563eb, #38bdf8);
-  border: none;
-  color: white;
-  font-family: 'Michroma', sans-serif;
-  font-size: 12px;
-  letter-spacing: 0.5px;
-  border-radius: 8px;
-  padding: 10px 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.flork-btn-next:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 6px 22px rgba(56, 189, 248, 0.6);
-}
-
-.flork-btn-next:active {
-  transform: translateY(1px) scale(0.97);
-}
-
-@keyframes florkTalk {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    transform: translateY(-3px) scale(1.04);
-  }
-}
-
-@keyframes rpgBounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(4px);
-  }
-}
-
-@media (max-width: 600px) {
-  .flork-dialogue-card {
-    padding: 20px 18px 16px;
-  }
-  .flork-dialogue-main {
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    text-align: center;
-  }
-  .flork-portrait-frame {
-    width: 85px;
-    height: 85px;
-    min-width: 85px;
-    max-width: 85px;
-  }
-  .flork-dialogue-text {
-    font-size: 16px;
-  }
-  .flork-dialogue-actions {
-    justify-content: center;
-  }
-}
-
-/* ==========================================================================
-   Flork Toast Notifier System (Mascot Notifications)
-   ========================================================================== */
-.flork-toast-container {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 99998;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  max-width: 380px;
-  pointer-events: none;
-}
-
-.flork-toast-item {
-  pointer-events: auto;
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  transform: translateY(40px) scale(0.85);
-  opacity: 0;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-}
-
-.flork-toast-item.active {
-  transform: translateY(0) scale(1);
-  opacity: 1;
-}
-
-.flork-toast-item.leaving {
-  transform: translateX(60px) scale(0.85);
-  opacity: 0;
-}
-
-.flork-toast-mascot {
-  flex-shrink: 0;
-}
-
-.flork-toast-img {
-  width: 58px;
-  height: 58px;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.4));
-  animation: florkFloat 3s ease-in-out infinite;
-}
-
-.flork-toast-bubble {
-  background: rgba(17, 24, 39, 0.94);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(77, 163, 255, 0.4);
-  border-radius: 14px;
-  padding: 12px 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(77, 163, 255, 0.15);
+/* Reception Body & Lobby Atmosphere */
+.cinema-reception-body {
+  background: #080a12 radial-gradient(ellipse 90% 60% at 50% -10%, rgba(190, 18, 60, 0.22) 0%, rgba(15, 23, 42, 0.4) 60%, transparent 100%);
+  background-attachment: fixed;
   color: #f1f5f9;
-  position: relative;
-  flex: 1;
 }
 
-.flork-toast-header {
-  display: flex;
+/* Reception Sidebar */
+.reception-sidebar {
+  background: #0c0f1a;
+  border-right: 1px solid rgba(245, 158, 11, 0.15);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+.cinema-lobby-badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  font-family: 'Michroma', sans-serif;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+  font-size: 10px;
+  font-family: "Michroma", sans-serif;
+  letter-spacing: 0.8px;
+}
+
+.cinema-lobby-badge .badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: badgeGlowPulse 2s infinite ease-in-out;
+}
+
+.btn-ticket-icon {
+  font-size: 16px;
+}
+
+.reception-bell-link {
+  color: #fde047 !important;
+  background: rgba(234, 179, 8, 0.08) !important;
+  border-color: rgba(234, 179, 8, 0.22) !important;
+}
+
+.reception-bell-link:hover {
+  background: rgba(234, 179, 8, 0.18) !important;
+  border-color: rgba(234, 179, 8, 0.5) !important;
+  color: #fef08a !important;
+  box-shadow: 0 4px 16px rgba(234, 179, 8, 0.25), inset 3px 0 0 #eab308 !important;
+}
+
+.lobby-exit-btn {
+  background: linear-gradient(135deg, #881337 0%, #be123c 100%) !important;
+  border: 1px solid rgba(244, 63, 94, 0.3) !important;
+}
+
+.lobby-exit-btn:hover {
+  background: linear-gradient(135deg, #9f1239 0%, #e11d48 100%) !important;
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.4) !important;
+}
+
+/* Floating Balance Badge */
+.cinema-counter-badge {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(180, 83, 9, 0.28));
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(245, 158, 11, 0.25);
+  padding: 8px 16px;
+  gap: 8px;
+}
+
+.badge-currency-label {
+  font-size: 12px;
+  color: #fef08a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* Marquee Header & Signboard */
+.reception-header {
+  padding-top: 24px;
+}
+
+.marquee-signboard {
+  background: linear-gradient(180deg, #181c2b 0%, #0d101d 100%);
+  border: 3px solid #d97706;
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
+  position: relative;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.marquee-signboard-inner {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.marquee-sub {
+  display: block;
+  font-family: "Poppins", sans-serif;
   font-size: 11px;
-  color: #38bdf8;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #fbbf24;
+  text-transform: uppercase;
   margin-bottom: 4px;
 }
 
-.flork-toast-close {
-  background: none;
-  border: none;
+.marquee-title {
+  font-family: "Cinzel", "Michroma", serif;
+  font-size: clamp(24px, 4vw, 38px);
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #fff;
+  margin: 0;
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.6), 0 0 28px rgba(245, 158, 11, 0.4);
+}
+
+.marquee-desk-title {
+  display: inline-block;
+  margin-top: 6px;
+  font-family: "Michroma", sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #fef08a;
+  text-shadow: 0 0 10px rgba(254, 240, 138, 0.5);
+}
+
+.marquee-bulbs {
+  display: flex;
+  justify-content: space-around;
+  padding: 4px 0;
+}
+
+.marquee-bulbs span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fde047;
+  box-shadow: 0 0 8px #fde047, 0 0 14px rgba(250, 204, 21, 0.8);
+  animation: bulbTwinkle 1.8s ease-in-out infinite alternate;
+}
+
+.marquee-bulbs span:nth-child(2n) {
+  animation-delay: 0.4s;
+  background: #fb923c;
+  box-shadow: 0 0 8px #fb923c, 0 0 14px rgba(251, 146, 60, 0.8);
+}
+
+.marquee-bulbs span:nth-child(3n) {
+  animation-delay: 0.9s;
+  background: #f43f5e;
+  box-shadow: 0 0 8px #f43f5e, 0 0 14px rgba(244, 63, 94, 0.8);
+}
+
+@keyframes bulbTwinkle {
+  0% { opacity: 0.35; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1.15); }
+}
+
+.reception-concierge-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 16px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+
+.reception-avatar-frame {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #881337, #be123c);
+  border: 2px solid #fbbf24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 0 18px rgba(251, 191, 36, 0.35);
+  flex-shrink: 0;
+}
+
+.reception-welcome-text h2 {
+  font-size: 20px;
+  margin: 0 0 4px 0;
+  color: #fff;
+}
+
+.reception-welcome-text p {
+  margin: 0;
   color: #94a3b8;
-  font-size: 16px;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-}
-
-.flork-toast-close:hover {
-  color: white;
-}
-
-.flork-toast-message {
-  font-family: 'Poppins', sans-serif;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.45;
+}
+
+/* Concierge Notice Banner */
+.reception-notice {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.16), rgba(136, 19, 55, 0.12));
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.wip-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wip-tag {
+  font-size: 10px;
+  font-family: "Michroma", sans-serif;
+  letter-spacing: 1px;
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+/* Velvet Divider with Brass Stanchions */
+.velvet-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 0 20px;
+  position: relative;
+}
+
+.stanchion-post {
+  width: 14px;
+  height: 24px;
+  background: linear-gradient(180deg, #fef08a 0%, #d97706 70%, #92400e 100%);
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.stanchion-post::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fef08a;
+  box-shadow: 0 0 8px rgba(254, 240, 138, 0.8);
+}
+
+.rope-line {
+  flex: 1;
+  height: 5px;
+  background: linear-gradient(90deg, #9f1239 0%, #be123c 50%, #9f1239 100%);
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), 0 0 10px rgba(190, 18, 60, 0.5);
+  margin: 0 4px;
+}
+
+/* ==========================================================================
+   VIP ADMIT ONE CINEMA TICKET STUB
+   ========================================================================== */
+.cinema-ticket-section {
+  margin-bottom: 12px;
+}
+
+.cinema-ticket-stub {
+  display: flex;
+  background: #111422;
+  border: 2px solid #d97706;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 24px rgba(217, 119, 6, 0.2);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+}
+
+.cinema-ticket-stub:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.7), 0 0 32px rgba(217, 119, 6, 0.35);
+}
+
+.ticket-part {
+  padding: 22px 24px;
+  position: relative;
+}
+
+.ticket-left {
+  flex: 1;
+  background: radial-gradient(circle at 0% 50%, rgba(190, 18, 60, 0.15) 0%, transparent 60%);
+}
+
+.ticket-cutout {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: #080a12;
+  border-radius: 50%;
+  z-index: 5;
+}
+
+.ticket-left .cutout-top {
+  top: -11px;
+  right: -11px;
+  border-bottom: 2px solid #d97706;
+}
+
+.ticket-left .cutout-bottom {
+  bottom: -11px;
+  right: -11px;
+  border-top: 2px solid #d97706;
+}
+
+.ticket-right .cutout-top {
+  top: -11px;
+  left: -11px;
+  border-bottom: 2px solid #d97706;
+}
+
+.ticket-right .cutout-bottom {
+  bottom: -11px;
+  left: -11px;
+  border-top: 2px solid #d97706;
+}
+
+.ticket-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.ticket-serial {
+  font-family: "Michroma", monospace;
+  font-size: 11px;
+  color: #fbbf24;
+  letter-spacing: 1px;
+}
+
+.ticket-pass-badge {
+  background: rgba(225, 29, 72, 0.25);
+  border: 1px solid rgba(225, 29, 72, 0.6);
+  color: #fda4af;
+  font-size: 10px;
+  font-family: "Michroma", sans-serif;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.ticket-title-row {
+  margin-bottom: 16px;
+}
+
+.ticket-event-name {
+  font-family: "Cinzel", "Michroma", serif;
+  font-size: 24px;
+  color: #f8fafc;
+  margin: 0;
+  letter-spacing: 1px;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+}
+
+.ticket-type {
+  font-size: 11px;
+  color: #f59e0b;
+  font-family: "Michroma", sans-serif;
+  letter-spacing: 1px;
+  display: block;
+  margin-top: 2px;
+}
+
+.ticket-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-label {
+  font-size: 9px;
+  font-family: "Michroma", sans-serif;
+  color: #94a3b8;
+  letter-spacing: 0.8px;
+  margin-bottom: 2px;
+}
+
+.meta-val {
+  font-size: 13px;
+  font-weight: 600;
   color: #e2e8f0;
 }
 
-@media (max-width: 640px) {
-  .flork-dialogue-card {
-    padding: 24px 20px 18px;
+.ticket-user-val {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.ticket-barcode-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barcode-graphic {
+  height: 22px;
+  background: repeating-linear-gradient(
+    90deg,
+    #94a3b8 0px,
+    #94a3b8 2px,
+    transparent 2px,
+    transparent 4px,
+    #e2e8f0 4px,
+    #e2e8f0 7px,
+    transparent 7px,
+    transparent 9px,
+    #94a3b8 9px,
+    #94a3b8 10px,
+    transparent 10px,
+    transparent 13px
+  );
+  opacity: 0.65;
+  border-radius: 2px;
+}
+
+.barcode-text {
+  font-family: monospace;
+  font-size: 9px;
+  color: #64748b;
+  letter-spacing: 1px;
+}
+
+/* Ticket Tear Perforation */
+.ticket-tear-line {
+  width: 0;
+  border-left: 2px dashed rgba(217, 119, 6, 0.55);
+  position: relative;
+}
+
+.ticket-right {
+  width: 220px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(24, 28, 43, 0.95), rgba(15, 18, 30, 0.95));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-left: none;
+}
+
+.stub-cinema-icon {
+  font-size: 32px;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
+}
+
+.stub-label {
+  font-size: 9px;
+  font-family: "Michroma", sans-serif;
+  letter-spacing: 0.8px;
+  color: #fbbf24;
+}
+
+.stub-chip-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.stub-coin {
+  font-size: 22px;
+}
+
+.stub-chip-number {
+  font-family: "Michroma", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fef08a;
+  text-shadow: 0 0 14px rgba(254, 240, 138, 0.6);
+}
+
+.stub-subtext {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+.stub-action-btn {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  border: 1px solid rgba(254, 240, 138, 0.4);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: "Michroma", sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);
+}
+
+.stub-action-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+}
+
+/* ==========================================================================
+   BOX OFFICE RATEBOARD / STATS
+   ========================================================================== */
+.cinema-rateboard {
+  position: relative;
+}
+
+.rateboard-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.rateboard-badge {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #7dd3fc;
+  font-size: 10px;
+  font-family: "Michroma", sans-serif;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.rateboard-grid {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.rateboard-card {
+  background: linear-gradient(180deg, rgba(24, 28, 43, 0.8) 0%, rgba(13, 16, 29, 0.95) 100%);
+  border: 2px solid rgba(217, 119, 6, 0.35);
+  border-radius: 16px;
+  padding: 22px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.rateboard-card-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #fbbf24, transparent);
+}
+
+.rateboard-icon {
+  font-size: 26px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.rateboard-card h3 {
+  color: #cbd5e1;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  font-family: "Michroma", sans-serif;
+  margin-bottom: 8px;
+}
+
+.rateboard-card strong {
+  color: #fef08a;
+  text-shadow: 0 0 16px rgba(254, 240, 138, 0.5);
+  font-size: 36px;
+}
+
+.rateboard-card .unit {
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.rateboard-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.rateboard-card:hover {
+  border-color: #fbbf24;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(251, 191, 36, 0.25);
+}
+
+/* ==========================================================================
+   NOW SHOWING MARQUEE THEME BOARD
+   ========================================================================== */
+.marquee-theme-board {
+  background: linear-gradient(135deg, #131724 0%, #0d101c 100%);
+  border: 2px solid #b45309;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.7);
+}
+
+.marquee-light-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.marquee-light-row i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fde047;
+  box-shadow: 0 0 6px #fde047;
+  display: block;
+  animation: bulbTwinkle 2s infinite alternate;
+}
+
+.marquee-season {
+  display: inline-block;
+  font-family: "Michroma", sans-serif;
+  font-size: 10px;
+  color: #f59e0b;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.marquee-board-content h2 {
+  font-family: "Cinzel", "Michroma", serif;
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: 1px;
+  margin: 0 0 14px 0;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+}
+
+.theme-banner-box {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.theme-label {
+  font-family: "Michroma", sans-serif;
+  font-size: 11px;
+  color: #fbbf24;
+  letter-spacing: 1px;
+}
+
+.theme-text {
+  font-size: 15px;
+  color: #f1f5f9;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   AUDITORIUM SCREENINGS SECTION
+   ========================================================================== */
+.auditorium-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.auditorium-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auditorium-badge {
+  background: rgba(225, 29, 72, 0.2);
+  border: 1px solid rgba(225, 29, 72, 0.5);
+  color: #fda4af;
+  font-size: 10px;
+  font-family: "Michroma", sans-serif;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.book-hall-btn {
+  background: linear-gradient(135deg, #be123c 0%, #e11d48 100%) !important;
+  border: 1px solid rgba(251, 191, 36, 0.4) !important;
+  box-shadow: 0 4px 16px rgba(190, 18, 60, 0.4) !important;
+}
+
+.book-hall-btn:hover {
+  background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%) !important;
+  box-shadow: 0 8px 24px rgba(225, 29, 72, 0.6) !important;
+}
+
+.empty-hall-box {
+  background: rgba(15, 23, 42, 0.5);
+  border: 2px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 36px 24px;
+  text-align: center;
+}
+
+.empty-hall-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.4));
+}
+
+.empty-hall-box h3 {
+  font-family: "Michroma", sans-serif;
+  font-size: 16px;
+  color: #e2e8f0;
+  margin-bottom: 8px;
+}
+
+.empty-hall-box p {
+  color: #94a3b8;
+  font-size: 14px;
+  max-width: 480px;
+  margin: 0 auto 18px;
+  line-height: 1.5;
+}
+
+.empty-book-btn {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  color: #fff;
+  border: 1px solid rgba(254, 240, 138, 0.4);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: "Michroma", sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.4);
+  transition: all 0.25s ease;
+}
+
+.empty-book-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.6);
+}
+
+/* Movie Poster Framing for Animation Cards */
+.animation-card {
+  border: 2px solid rgba(217, 119, 6, 0.3) !important;
+  background: linear-gradient(180deg, #151929 0%, #0d101c 100%) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+.animation-card:hover {
+  border-color: #fbbf24 !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(251, 191, 36, 0.3) !important;
+}
+
+/* ==========================================================================
+   RECEPTION FOOTER
+   ========================================================================== */
+.reception-footer {
+  background: #090b14;
+  border-top: 1px solid rgba(245, 158, 11, 0.15);
+  padding: 36px 20px 24px;
+  text-align: center;
+  margin-top: 48px;
+}
+
+.footer-marquee h1 {
+  font-family: "Cinzel", "Michroma", serif;
+  font-size: 24px;
+  color: #f1f5f9;
+  letter-spacing: 1px;
+}
+
+.footer-tagline {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.footer-links-row {
+  margin: 18px 0;
+}
+
+.footer-slack-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #fef08a !important;
+  padding: 8px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.footer-slack-link:hover {
+  background: rgba(234, 179, 8, 0.2);
+  border-color: #facc15;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(234, 179, 8, 0.3);
+}
+
+.footer-trivia {
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 12px;
+}
+
+/* ==========================================================================
+   BOX OFFICE BOOKING MODAL
+   ========================================================================== */
+.cinema-boxoffice-modal {
+  background: linear-gradient(180deg, #171b2c 0%, #0c0f1b 100%) !important;
+  border: 2px solid #d97706 !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(217, 119, 6, 0.3) !important;
+  border-radius: 18px !important;
+}
+
+.boxoffice-badge {
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fef08a;
+  font-size: 10px;
+  font-family: "Michroma", sans-serif;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.boxoffice-header h2 {
+  font-family: "Cinzel", "Michroma", serif !important;
+  font-size: 22px !important;
+  color: #fff !important;
+}
+
+.cinema-booking-form input,
+.cinema-booking-form textarea {
+  background: #090c17 !important;
+  border: 1px solid rgba(217, 119, 6, 0.35) !important;
+  color: #f8fafc !important;
+}
+
+.cinema-booking-form input:focus,
+.cinema-booking-form textarea:focus {
+  border-color: #fbbf24 !important;
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.35) !important;
+}
+
+.book-hall-confirm-btn {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  border: 1px solid rgba(254, 240, 138, 0.4) !important;
+  color: #fff !important;
+  font-family: "Michroma", sans-serif !important;
+  font-size: 12px !important;
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.45) !important;
+}
+
+.book-hall-confirm-btn:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.65) !important;
+}
+
+/* Responsive Adjustments for Ticket Stub */
+@media (max-width: 768px) {
+  .cinema-ticket-stub {
+    flex-direction: column;
   }
-  .flork-mascot-perch {
-    left: 16px;
-    top: -54px;
+  .ticket-tear-line {
+    width: 100%;
+    height: 0;
+    border-left: none;
+    border-top: 2px dashed rgba(217, 119, 6, 0.55);
   }
-  .flork-character-img {
-    width: 74px;
-    height: 74px;
+  .ticket-right {
+    width: 100%;
+    padding: 20px;
   }
-  .flork-card-header {
-    padding-left: 78px;
+  .ticket-left .cutout-top {
+    display: none;
   }
-  .flork-dialogue-text {
-    font-size: 15px;
+  .ticket-left .cutout-bottom {
+    display: none;
   }
-  .flork-toast-container {
-    bottom: 16px;
-    right: 16px;
-    left: 16px;
-    max-width: none;
+  .ticket-right .cutout-top {
+    display: none;
+  }
+  .ticket-right .cutout-bottom {
+    display: none;
+  }
+  .marquee-title {
+    font-size: 20px;
   }
 }

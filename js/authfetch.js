@@ -151,9 +151,18 @@ if (!token) {
     }
 
     console.log("Safely landed on app page. Absolute Cinema is online.");
+    const displayName = userData.name || userData.email || "Creator";
     const usernameEl = document.getElementById("username-display");
     if (usernameEl) {
-      usernameEl.innerText = userData.name || userData.email || "Creator";
+      usernameEl.innerText = displayName;
+    }
+    const ticketUserEl = document.querySelector(".ticket-user-val");
+    if (ticketUserEl) {
+      ticketUserEl.innerText = displayName;
+    }
+    const ticketChipsEl = document.getElementById("ticket-chips-display");
+    if (ticketChipsEl && userData.anichips !== undefined) {
+      animateStatNumber(ticketChipsEl, userData.anichips, 1000, false);
     }
     const anichipsEl = document.getElementById("anichips-balance");
     if (anichipsEl && userData.anichips !== undefined) {
@@ -664,9 +673,18 @@ if (isDashboard) {
       const role = userData.role || (isAdmin ? "admin" : "participant");
       window.userRole = role;
 
+      const displayName = userData.name || userData.email || "Creator";
       const usernameEl = document.getElementById('username-display');
       if (usernameEl) {
-        usernameEl.innerText = userData.name || userData.email || "Creator";
+        usernameEl.innerText = displayName;
+      }
+      const ticketUserEl = document.querySelector(".ticket-user-val");
+      if (ticketUserEl) {
+        ticketUserEl.innerText = displayName;
+      }
+      const ticketChipsEl = document.getElementById("ticket-chips-display");
+      if (ticketChipsEl && userData.anichips !== undefined) {
+        animateStatNumber(ticketChipsEl, userData.anichips, 1000, false);
       }
 
       updateDashboardStats(userData, projects);
