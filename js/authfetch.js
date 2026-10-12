@@ -14,21 +14,64 @@ if (sessionToken) {
 let token = localStorage.getItem('cinema_session');
 const dashboardUrl = window.location.protocol === "file:" ? "dashboard.html" : "/dashboard.html";
 const isDashboard = window.location.pathname.includes("dashboard");
-const isShop = window.location.pathname.includes("shop");
-const isProfile = window.location.pathname.includes("profile");
-const isReview = window.location.pathname.includes("review");
-const isAdminPage = window.location.pathname.includes("admin");
-const isAppPage = isDashboard || isShop || isProfile || isReview || isAdminPage;
 const isHomePage =
-  !isAppPage &&
+  !isDashboard &&
   (window.location.pathname === "/" ||
    window.location.pathname.endsWith("/index.html") ||
    window.location.pathname.endsWith("/index") ||
    window.location.pathname === "" ||
    window.location.pathname.endsWith("/"));
 
+function checkIsAdminUser(userData) {
+  if (!userData) return false;
+  if (userData.isAdmin || userData.is_admin === 1 || userData.role === "admin") return true;
+  if (userData.email && (
+    userData.email.toLowerCase() === "creatorpoints.dev@gmail.com" ||
+    userData.email.toLowerCase() === "ghoshsoumyadeep48@gmail.com"
+  )) return true;
+  return false;
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderIndexSignedInState(userData, isAdmin) {
+  const regSection = document.querySelector(".registration");
+  if (!regSection) return;
+
+  const displayName = userData.name || (userData.email ? userData.email.split('@')[0] : "Creator");
+  const roleName = isAdmin ? "Admin" : (userData.role === "reviewer" ? "Reviewer" : "Participant");
+
+  regSection.innerHTML = `
+    <div class="signed-in-card">
+      <div class="signed-in-user-row">
+        <h1>Welcome, <span class="highlight-user">${escapeHtml(displayName)}</span>! 👋</h1>
+        <span class="user-role-badge ${isAdmin ? 'badge-admin' : 'badge-participant'}">${roleName}</span>
+      </div>
+      <p class="signed-in-note">You are signed in with Hack Club.</p>
+      
+      <div class="wip-banner">
+        <span class="wip-icon">🚨</span>
+        <p class="wip-message">CreatorPoints is busy making the cinema hall</p>
+      </div>
+
+      <div class="signed-in-actions">
+        ${isAdmin ? `<a href="${dashboardUrl}" class="enter-dash-btn"><button class="signin">Enter Dashboard 🛠️</button></a>` : ''}
+        <button class="logout-btn" onclick="logoutCinema()">Log out</button>
+      </div>
+    </div>
+  `;
+}
+
 if (!token) {
-  if (isAppPage) {
+  if (isDashboard) {
     window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
   } else {
     fetch("https://absolute-cinema-manager.hackclub.app/api/me", {
@@ -43,9 +86,17 @@ if (!token) {
           token = userData.sessionId;
         }
         window.currentUser = userData;
-        window.userRole = userData.role || (userData.isAdmin ? "admin" : "participant");
-        if (isHomePage) {
-          window.location.replace(dashboardUrl);
+        const isAdmin = checkIsAdminUser(userData);
+        window.userRole = userData.role || (isAdmin ? "admin" : "participant");
+
+        if (isDashboard) {
+          if (!isAdmin) {
+            window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
+            return;
+          }
+          document.body.classList.remove('auth-pending');
+        } else if (isHomePage) {
+          renderIndexSignedInState(userData, isAdmin);
         }
       }
     })
@@ -64,7 +115,7 @@ if (!token) {
   .then(response => {
     if (!response.ok) {
       localStorage.removeItem('cinema_session');
-      if (isAppPage) {
+      if (isDashboard) {
         window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
       }
       throw new Error("Session invalid or expired.");
@@ -79,29 +130,23 @@ if (!token) {
       token = userData.sessionId;
     }
 
-    const role = userData.role || (userData.isAdmin ? "admin" : "participant");
+    const isAdmin = checkIsAdminUser(userData);
+    const role = userData.role || (isAdmin ? "admin" : "participant");
     window.currentUser = userData;
     window.userRole = role;
 
-    const canReview = role === "reviewer" || role === "admin";
-    const canAdmin = role === "admin";
-
-    if (isHomePage) {
-      if (userData.email && userData.email.toLowerCase() === "creatorpoints.dev@gmail.com") {
-        window.location.replace(dashboardUrl);
+    if (isDashboard) {
+      if (!isAdmin) {
+        // Participants & reviewers cannot access the dashboard during WIP
+        window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
         return;
       }
-      window.location.replace(dashboardUrl);
-      return;
+      // Admins are authorized! Reveal dashboard
+      document.body.classList.remove('auth-pending');
     }
 
-    if (isReview && !canReview) {
-      window.location.replace(dashboardUrl);
-      return;
-    }
-
-    if (isAdminPage && !canAdmin) {
-      window.location.replace(dashboardUrl);
+    if (isHomePage) {
+      renderIndexSignedInState(userData, isAdmin);
       return;
     }
 
@@ -112,23 +157,11 @@ if (!token) {
     }
     const anichipsEl = document.getElementById("anichips-balance");
     if (anichipsEl && userData.anichips !== undefined) {
-      if (!isDashboard) {
-        animateStatNumber(anichipsEl, userData.anichips, 1000, false);
-      }
+      animateStatNumber(anichipsEl, userData.anichips, 1000, false);
     }
     const statChipsEl = document.getElementById("stats-anichips");
     if (statChipsEl && userData.anichips !== undefined) {
-      if (!isDashboard) {
-        animateStatNumber(statChipsEl, userData.anichips, 1000, false);
-      }
-    }
-    const reviewLink = document.getElementById("review-nav-link");
-    if (reviewLink) {
-      reviewLink.style.display = canReview ? "flex" : "none";
-    }
-    const adminLink = document.getElementById("admin-nav-link");
-    if (adminLink) {
-      adminLink.style.display = canAdmin ? "flex" : "none";
+      animateStatNumber(statChipsEl, userData.anichips, 1000, false);
     }
   })
   .catch(error => {
@@ -612,6 +645,13 @@ if (isDashboard) {
       }
 
       const userData = await meRes.json();
+      const isAdmin = checkIsAdminUser(userData);
+      if (!isAdmin) {
+        window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
+        return;
+      }
+      document.body.classList.remove('auth-pending');
+
       let projects = [];
       if (projRes.ok) {
         try {
@@ -621,7 +661,7 @@ if (isDashboard) {
       }
 
       window.currentUser = userData;
-      const role = userData.role || (userData.isAdmin ? "admin" : "participant");
+      const role = userData.role || (isAdmin ? "admin" : "participant");
       window.userRole = role;
 
       const usernameEl = document.getElementById('username-display');
@@ -629,18 +669,8 @@ if (isDashboard) {
         usernameEl.innerText = userData.name || userData.email || "Creator";
       }
 
-      const canReview = role === "reviewer" || role === "admin";
-      const canAdmin = role === "admin";
-      const reviewLink = document.getElementById("review-nav-link");
-      if (reviewLink) reviewLink.style.display = canReview ? "flex" : "none";
-      const adminLink = document.getElementById("admin-nav-link");
-      if (adminLink) adminLink.style.display = canAdmin ? "flex" : "none";
-
       updateDashboardStats(userData, projects);
       renderDashboardProjects(projects);
-      if (window.initFlorkOnDashboard) {
-        window.initFlorkOnDashboard(userData);
-      }
     } catch (err) {
     } finally {
       isRefreshing = false;

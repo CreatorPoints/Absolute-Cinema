@@ -330,3 +330,148 @@ footer a:hover {
     opacity: 0.09;
   }
 }
+
+/* ==========================================================================
+   WIP Banner & Signed In State
+   ========================================================================== */
+
+.signed-in-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(77, 163, 255, 0.25);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  margin-top: 20px;
+}
+
+.signed-in-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.signed-in-user-row h1 {
+  font-size: 26px;
+  margin: 0;
+}
+
+.highlight-user {
+  color: #4DA3FF;
+  text-shadow: 0 0 16px rgba(77, 163, 255, 0.4);
+}
+
+.user-role-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-admin {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.badge-participant {
+  background: rgba(56, 189, 248, 0.2);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.signed-in-note {
+  color: #94a3b8;
+  margin: 8px 0 16px;
+  font-size: 14px;
+}
+
+.wip-banner {
+  margin-top: 14px;
+  margin-bottom: 18px;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.12), rgba(249, 115, 22, 0.08));
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  animation: wipPulse 4s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.wip-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(234, 179, 8, 0.25);
+}
+
+.wip-banner .wip-icon {
+  font-size: 22px;
+  line-height: 1;
+  display: inline-block;
+  animation: sirenWiggle 2.5s ease-in-out infinite;
+}
+
+.wip-banner .wip-message {
+  margin: 0;
+  color: #fef08a;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.signed-in-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.enter-dash-btn {
+  text-decoration: none;
+}
+
+.logout-btn {
+  background: #e11d48;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+.logout-btn:hover {
+  background: #be123c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes wipPulse {
+  0%, 100% {
+    border-color: rgba(234, 179, 8, 0.35);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    border-color: rgba(234, 179, 8, 0.7);
+    box-shadow: 0 6px 24px rgba(234, 179, 8, 0.25);
+  }
+}
+
+@keyframes sirenWiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-8deg) scale(1.1); }
+  75% { transform: rotate(8deg) scale(1.1); }
+}
