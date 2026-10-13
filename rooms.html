@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virtual Screening Rooms — Absolute Cinema</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Michroma&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dash.css" />
+  </head>
+  <body class="cinema-hall-body auth-pending">
+    <div class="rooms-main">
+      <!-- Top Navigation & Return to Reception Lobby -->
+      <header class="rooms-top-nav">
+        <a href="dashboard.html" class="lobby-back-link" id="back-to-lobby-btn">
+          <span>🚪</span> Return to Reception Lobby
+        </a>
+
+        <!-- Floating Cinema Chip Badge -->
+        <div class="floating-balance-badge cinema-counter-badge" style="position: static; margin: 0;">
+          <span class="coin-icon">🪙</span>
+          <span id="anichips-balance">0</span>
+          <span class="badge-currency-label">AniChips</span>
+        </div>
+
+        <button class="logout-btn" onclick="logoutCinema()" style="padding: 8px 16px;">
+          <span>🚪</span> Exit
+        </button>
+      </header>
+
+      <!-- Marquee Header -->
+      <header class="greet reception-header" style="padding-top: 10px;">
+        <div class="marquee-signboard">
+          <div class="marquee-bulbs marquee-bulbs-top">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="marquee-signboard-inner">
+            <span class="marquee-sub">ABSOLUTE CINEMA • VIRTUAL AUDITORIUM</span>
+            <h1 class="marquee-title">SCREENING ROOMS</h1>
+            <span class="marquee-desk-title">★ LIVE PREMIERE THEATRE &amp; STAGE ★</span>
+          </div>
+          <div class="marquee-bulbs marquee-bulbs-bottom">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="reception-concierge-row">
+          <div class="reception-avatar-frame">
+            <span class="concierge-hat">🎬</span>
+          </div>
+          <div class="reception-welcome-text">
+            <h2>Welcome to the Screening Hall, <span id="username-display">...</span>!</h2>
+            <p>You have stepped through the green double doors into the cinema auditorium. This is where live screenings and premiere broadcasts take place!</p>
+          </div>
+        </div>
+
+        <!-- WIP Notice -->
+        <div class="wip-banner reception-notice">
+          <span class="wip-icon">🛎️</span>
+          <div class="wip-text-wrap">
+            <span class="wip-tag">AUDITORIUM NOTICE</span>
+            <p class="wip-message">CreatorPoints is busy making the virtual screening rooms &amp; iframe player</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="velvet-divider">
+        <span class="stanchion-post left"></span>
+        <span class="rope-line"></span>
+        <span class="stanchion-post right"></span>
+      </div>
+
+      <!-- Main Auditorium Projector Screen Stage -->
+      <section class="auditorium-screen-frame">
+        <div class="screen-header-bar">
+          <div class="screen-stage-badge">
+            <span class="live-dot"></span>
+            <span>AUDITORIUM 1 • MAIN STAGE</span>
+          </div>
+          <span style="font-size: 11px; color: #94a3b8; font-family: 'Michroma', sans-serif;">
+            STATUS: CALIBRATING LENS 📽️
+          </span>
+        </div>
+
+        <div class="screen-theatre-display">
+          <div class="curtains-overlay">
+            <div class="curtain-drape left"></div>
+            <div class="curtain-drape right"></div>
+          </div>
+          <div class="screen-inner-content">
+            <div class="projector-lens-icon">📽️</div>
+            <h2>PREMIERE SCREENING STAGE</h2>
+            <p>
+              During festival premiere night, all approved short films will be screened live right here on this stage with synchronized audience seating, live reactions, and instant voting!
+            </p>
+            <div class="screen-actions">
+              <button class="create-film-btn open-film-modal-btn" style="padding: 10px 20px;">
+                <span>🎟️</span> Book / Submit Film for Premiere
+              </button>
+              <a href="dashboard.html" class="lobby-back-link" style="padding: 10px 20px;">
+                <span>🛎️</span> Back to Reception Desk
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Active Screening Rooms Directory -->
+      <section>
+        <div class="rateboard-header" style="margin-bottom: 16px;">
+          <span class="rateboard-badge">DIRECTORY</span>
+          <h2>🎪 Scheduled Screening Rooms</h2>
+        </div>
+
+        <div class="rooms-directory-grid">
+          <div class="auditorium-card">
+            <div class="auditorium-card-header">
+              <span class="auditorium-badge">ROOM #01</span>
+              <span class="auditorium-status ready">PREPPING</span>
+            </div>
+            <h3>Auditorium A: Feature Presentation</h3>
+            <p>The main premiere theater for top-billed animated short films and season finalists.</p>
+            <button class="open-film-modal-btn stub-action-btn" style="width: 100%;">
+              + Reserve Seat
+            </button>
+          </div>
+
+          <div class="auditorium-card">
+            <div class="auditorium-card-header">
+              <span class="auditorium-badge">ROOM #02</span>
+              <span class="auditorium-status">SCHEDULED</span>
+            </div>
+            <h3>Auditorium B: Indie Animation Showcase</h3>
+            <p>Community spotlight room for experimental shorts, frame-by-frame tests, and community passion projects.</p>
+            <button class="open-film-modal-btn stub-action-btn" style="width: 100%;">
+              + Reserve Seat
+            </button>
+          </div>
+
+          <div class="auditorium-card">
+            <div class="auditorium-card-header">
+              <span class="auditorium-badge">ROOM #03</span>
+              <span class="auditorium-status">SCHEDULED</span>
+            </div>
+            <h3>Auditorium C: Midnight Animators Lab</h3>
+            <p>Open testing hall for animators to preview their custom room iframes and sound designs before the premiere.</p>
+            <button class="open-film-modal-btn stub-action-btn" style="width: 100%;">
+              + Reserve Seat
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Booking Modal (for film submission & hall booking) -->
+    <div id="create-film-modal" class="modal-backdrop">
+      <div class="modal-card cinema-modal-frame">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <span class="modal-badge">BOX OFFICE DISPATCH</span>
+            <h2>🎟️ Book Premiere Screening Hall</h2>
+          </div>
+          <button id="close-film-modal-x" class="close-btn">&times;</button>
+        </div>
+        <form id="create-film-form" class="cinema-booking-form">
+          <div class="form-group">
+            <label for="film-title">🎞️ Short Film Title *</label>
+            <input type="text" id="film-title" name="title" placeholder="e.g. Midnight Run, Echoes of Light" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="film-software">🛠️ Animation Tools / Software Used *</label>
+              <input type="text" id="film-software" name="software" placeholder="e.g. Blender, Maya, Krita, Flipaclip" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="film-banner">🖼️ Movie Poster / Banner Image URL</label>
+            <input type="url" id="film-banner" name="bannerUrl" placeholder="https://... (direct link to your poster/banner)">
+          </div>
+          <div class="form-group">
+            <label for="film-notes">📝 Film Synopsis &amp; Cinema Hall Notes</label>
+            <textarea id="film-notes" name="notes" rows="3" placeholder="Tell the audience and judges about your film and your virtual cinema hall room..."></textarea>
+          </div>
+          <div class="modal-actions boxoffice-actions">
+            <button type="button" id="close-film-modal" class="cancel-modal-btn">Cancel</button>
+            <button type="submit" class="submit-modal-btn book-hall-confirm-btn">
+              🎟️ Confirm Hall Booking
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/authfetch.js"></script>
+    <script>
+      // Support file: protocol and cleanUrls navigation
+      const backBtn = document.getElementById('back-to-lobby-btn');
+      if (backBtn) {
+        backBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = window.location.protocol === 'file:' ? 'dashboard.html' : '/dashboard';
+          window.location.href = target;
+        });
+      }
+    </script>
+  </body>
+</html>

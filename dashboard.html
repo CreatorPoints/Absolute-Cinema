@@ -34,8 +34,14 @@
         </div>
 
         <nav class="sidebar-nav">
-          <a href="#screenings" class="sidebar-link active">
-            <span class="link-icon">🎬</span> Screenings
+          <a href="#lobby" class="sidebar-link active">
+            <span class="link-icon">🛎️</span> Reception Lobby
+          </a>
+          <a href="rooms.html" class="sidebar-link" id="sidebar-rooms-link">
+            <span class="link-icon">🚪</span> Screening Rooms (/rooms)
+          </a>
+          <a href="#ticket" class="sidebar-link">
+            <span class="link-icon">🎟️</span> VIP Premiere Pass
           </a>
           <a href="#box-office" class="sidebar-link">
             <span class="link-icon">📋</span> Box Office
@@ -108,8 +114,80 @@
         </div>
 
         <main>
+          <!-- Forge-Style Interactive Cinema Lobby Reception Scene -->
+          <section id="lobby" class="cinema-lobby-scene-section">
+            <div class="scene-viewport-header">
+              <div class="scene-status-pill">
+                <span class="pulse-dot"></span>
+                <span>RECEPTION DESK • POINT &amp; CLICK</span>
+              </div>
+              <div class="scene-hints">
+                <span>💡 Click Flork at the desk or click the green doors to enter screening rooms!</span>
+              </div>
+            </div>
+
+            <div class="cinema-scene-frame">
+              <img src="assets/dashboard.jpg" alt="Cinema Hall Reception Desk with Flork and Green Doors" class="cinema-scene-bg" />
+
+              <!-- Hotspot: Flork at Reception Desk -->
+              <button type="button" class="scene-hotspot hotspot-flork" id="hotspot-flork" aria-label="Talk to Flork at the Reception Desk">
+                <div class="hotspot-badge flork-badge">
+                  <span class="badge-icon">💬</span>
+                  <span class="badge-text">Talk to Flork</span>
+                </div>
+                <div class="hotspot-glow"></div>
+              </button>
+
+              <!-- Hotspot: Green Double Doors leading to /rooms -->
+              <a href="rooms.html" class="scene-hotspot hotspot-door" id="hotspot-door" aria-label="Enter Screening Rooms">
+                <div class="hotspot-badge door-badge">
+                  <span class="badge-icon">🚪</span>
+                  <span class="badge-text">Screening Rooms (/rooms)</span>
+                </div>
+                <div class="hotspot-glow"></div>
+              </a>
+            </div>
+
+            <!-- Flork Reception Desk Interactive Dialogue Popover -->
+            <div class="flork-dialogue-card" id="flork-dialogue-card" aria-hidden="true">
+              <div class="flork-dialogue-header">
+                <div class="flork-speaker-info">
+                  <img src="assets/flork/Standing-happy.png" alt="Flork" class="flork-speaker-avatar" id="flork-avatar-img" />
+                  <div>
+                    <span class="speaker-name">Flork</span>
+                    <span class="speaker-role">Cinema Hall Director &amp; Concierge</span>
+                  </div>
+                </div>
+                <button type="button" class="flork-dialogue-close" id="flork-dialogue-close" aria-label="Close dialogue">&times;</button>
+              </div>
+              <div class="flork-speech-bubble">
+                <p id="flork-speech-text">Welcome to the Absolute Cinema Hall reception desk! Check your premiere ticket, book a premiere screening room, or step through the green doors into the auditorium!</p>
+              </div>
+              <div class="flork-dialogue-actions">
+                <button type="button" class="flork-action-btn action-ticket" id="flork-btn-ticket">
+                  <span>🎟️</span> View My Ticket
+                </button>
+                <button type="button" class="flork-action-btn action-book open-film-modal-btn">
+                  <span>🎬</span> Book Premiere Hall
+                </button>
+                <a href="rooms.html" class="flork-action-btn action-rooms" id="flork-btn-rooms">
+                  <span>🚪</span> Go to /rooms
+                </a>
+                <button type="button" class="flork-action-btn action-advice" id="flork-btn-advice">
+                  <span>💡</span> Animator Wisdom
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <div class="velvet-divider">
+            <span class="stanchion-post left"></span>
+            <span class="rope-line"></span>
+            <span class="stanchion-post right"></span>
+          </div>
+
           <!-- VIP Admit One Ticket Stub Card (Driven by assets/ticket.png) -->
-          <section class="cinema-ticket-section">
+          <section id="ticket" class="cinema-ticket-section">
             <div class="cinema-ticket-stub">
               <div class="ticket-part ticket-left">
                 <div class="ticket-header-row">
@@ -305,5 +383,6 @@
       </div>
     </div>
     <script src="js/authfetch.js"></script>
+    <script src="js/lobby.js"></script>
   </body>
 </html>

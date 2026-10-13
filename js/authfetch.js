@@ -14,8 +14,10 @@ if (sessionToken) {
 let token = localStorage.getItem('cinema_session');
 const dashboardUrl = window.location.protocol === "file:" ? "dashboard.html" : "/dashboard.html";
 const isDashboard = window.location.pathname.includes("dashboard");
+const isRooms = window.location.pathname.includes("rooms");
+const isProtectedPage = isDashboard || isRooms;
 const isHomePage =
-  !isDashboard &&
+  !isProtectedPage &&
   (window.location.pathname === "/" ||
    window.location.pathname.endsWith("/index.html") ||
    window.location.pathname.endsWith("/index") ||
@@ -71,7 +73,7 @@ function renderIndexSignedInState(userData, isAdmin) {
 }
 
 if (!token) {
-  if (isDashboard) {
+  if (isProtectedPage) {
     window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
   } else {
     fetch("https://absolute-cinema-manager.hackclub.app/api/me", {
@@ -89,7 +91,7 @@ if (!token) {
         const isAdmin = checkIsAdminUser(userData);
         window.userRole = userData.role || (isAdmin ? "admin" : "participant");
 
-        if (isDashboard) {
+        if (isProtectedPage) {
           if (!isAdmin) {
             window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
             return;
@@ -135,13 +137,13 @@ if (!token) {
     window.currentUser = userData;
     window.userRole = role;
 
-    if (isDashboard) {
+    if (isProtectedPage) {
       if (!isAdmin) {
-        // Participants & reviewers cannot access the dashboard during WIP
+        // Participants & reviewers cannot access the dashboard/rooms during WIP
         window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
         return;
       }
-      // Admins are authorized! Reveal dashboard
+      // Admins are authorized! Reveal dashboard/rooms
       document.body.classList.remove('auth-pending');
     }
 
