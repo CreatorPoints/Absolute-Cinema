@@ -1,388 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Absolute Cinema — Reception & Box Office</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Michroma&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/dash.css">
-    <style>
-      body.auth-pending {
-        display: none !important;
-      }
-    </style>
-  </head>
-  <body class="auth-pending cinema-reception-body">
-    <div class="dashboard-container">
-      <!-- Reception Desk Sidebar -->
-      <aside class="dashboard-sidebar reception-sidebar">
-        <div class="sidebar-brand">
-          <a href="https://hackclub.com/">
-            <img src="assets/hackclub.svg" alt="Hack Club" width="140" height="53">
-          </a>
-          <div class="cinema-lobby-badge">
-            <span class="badge-dot"></span> LOBBY CONCIERGE
-          </div>
-        </div>
-
-        <div class="sidebar-action">
-          <button id="open-film-modal" class="create-film-btn open-film-modal-btn">
-            <span class="btn-ticket-icon">🎟️</span> Book Premiere Hall
-          </button>
-        </div>
-
-        <nav class="sidebar-nav">
-          <a href="#lobby" class="sidebar-link active">
-            <span class="link-icon">🛎️</span> Reception Lobby
-          </a>
-          <a href="rooms.html" class="sidebar-link" id="sidebar-rooms-link">
-            <span class="link-icon">🚪</span> Screening Rooms (/rooms)
-          </a>
-          <a href="#ticket" class="sidebar-link">
-            <span class="link-icon">🎟️</span> VIP Premiere Pass
-          </a>
-          <a href="#box-office" class="sidebar-link">
-            <span class="link-icon">📋</span> Box Office
-          </a>
-          <a href="#feature-theme" class="sidebar-link">
-            <span class="link-icon">🎪</span> Marquee Theme
-          </a>
-          <a href="https://app.slack.com/client/E09V59WQY1E/C0C4S835R4L" target="_blank" class="sidebar-link reception-bell-link">
-            <span class="link-icon">🛎️</span> Concierge Bell (Slack)
-          </a>
-        </nav>
-
-        <div class="sidebar-footer">
-          <button class="logout-btn lobby-exit-btn" onclick="logoutCinema()">
-            <span>🚪</span> Exit Lobby
-          </button>
-        </div>
-      </aside>
-
-      <!-- Main Cinema Hall Reception Area -->
-      <div class="dashboard-main-content reception-main">
-        <!-- Floating Cinema Chip Badge -->
-        <div class="floating-balance-badge cinema-counter-badge">
-          <span class="coin-icon">🪙</span>
-          <span id="anichips-balance">0</span>
-          <span class="badge-currency-label">AniChips</span>
-        </div>
-
-        <!-- Cinema Marquee Header & Concierge Welcome -->
-        <header class="greet reception-header">
-          <!-- Marquee Bulbs Frame -->
-          <div class="marquee-signboard">
-            <div class="marquee-bulbs marquee-bulbs-top">
-              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-            </div>
-            <div class="marquee-signboard-inner">
-              <span class="marquee-sub">WELCOME TO THE OFFICIAL</span>
-              <h1 class="marquee-title">ABSOLUTE CINEMA HALL</h1>
-              <span class="marquee-desk-title">★ GRAND RECEPTION & BOX OFFICE ★</span>
-            </div>
-            <div class="marquee-bulbs marquee-bulbs-bottom">
-              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-            </div>
-          </div>
-
-          <div class="reception-concierge-row">
-            <div class="reception-avatar-frame">
-              <span class="concierge-hat">🎬</span>
-            </div>
-            <div class="reception-welcome-text">
-              <h2>Good evening, <span id="username-display">...</span>!</h2>
-              <p>Step right up to the reception desk. Check your screening room, collect your passes, and prepare your films for premiere night!</p>
-            </div>
-          </div>
-
-          <!-- Concierge Alert / WIP Notice -->
-          <div class="wip-banner reception-notice">
-            <span class="wip-icon">🛎️</span>
-            <div class="wip-text-wrap">
-              <span class="wip-tag">CONCIERGE NOTICE</span>
-              <p class="wip-message">CreatorPoints is busy making the cinema hall</p>
-            </div>
-          </div>
-        </header>
-
-        <div class="velvet-divider">
-          <span class="stanchion-post left"></span>
-          <span class="rope-line"></span>
-          <span class="stanchion-post right"></span>
-        </div>
-
-        <main>
-          <!-- Forge-Style Interactive Cinema Lobby Reception Scene -->
-          <section id="lobby" class="cinema-lobby-scene-section">
-            <div class="scene-viewport-header">
-              <div class="scene-status-pill">
-                <span class="pulse-dot"></span>
-                <span>RECEPTION DESK • POINT &amp; CLICK</span>
-              </div>
-              <div class="scene-hints">
-                <span>💡 Click Flork at the desk or click the green doors to enter screening rooms!</span>
-              </div>
-            </div>
-
-            <div class="cinema-scene-frame">
-              <img src="assets/dashboard.jpg" alt="Cinema Hall Reception Desk with Flork and Green Doors" class="cinema-scene-bg" />
-
-              <!-- Hotspot: Flork at Reception Desk -->
-              <button type="button" class="scene-hotspot hotspot-flork" id="hotspot-flork" aria-label="Talk to Flork at the Reception Desk">
-                <div class="hotspot-badge flork-badge">
-                  <span class="badge-icon">💬</span>
-                  <span class="badge-text">Talk to Flork</span>
-                </div>
-                <div class="hotspot-glow"></div>
-              </button>
-
-              <!-- Hotspot: Green Double Doors leading to /rooms -->
-              <a href="rooms.html" class="scene-hotspot hotspot-door" id="hotspot-door" aria-label="Enter Screening Rooms">
-                <div class="hotspot-badge door-badge">
-                  <span class="badge-icon">🚪</span>
-                  <span class="badge-text">Screening Rooms (/rooms)</span>
-                </div>
-                <div class="hotspot-glow"></div>
-              </a>
-            </div>
-
-            <!-- Flork Reception Desk Interactive Dialogue Popover -->
-            <div class="flork-dialogue-card" id="flork-dialogue-card" aria-hidden="true">
-              <div class="flork-dialogue-header">
-                <div class="flork-speaker-info">
-                  <img src="assets/flork/Standing-happy.png" alt="Flork" class="flork-speaker-avatar" id="flork-avatar-img" />
-                  <div>
-                    <span class="speaker-name">Flork</span>
-                    <span class="speaker-role">Cinema Hall Director &amp; Concierge</span>
-                  </div>
-                </div>
-                <button type="button" class="flork-dialogue-close" id="flork-dialogue-close" aria-label="Close dialogue">&times;</button>
-              </div>
-              <div class="flork-speech-bubble">
-                <p id="flork-speech-text">Welcome to the Absolute Cinema Hall reception desk! Check your premiere ticket, book a premiere screening room, or step through the green doors into the auditorium!</p>
-              </div>
-              <div class="flork-dialogue-actions">
-                <button type="button" class="flork-action-btn action-ticket" id="flork-btn-ticket">
-                  <span>🎟️</span> View My Ticket
-                </button>
-                <button type="button" class="flork-action-btn action-book open-film-modal-btn">
-                  <span>🎬</span> Book Premiere Hall
-                </button>
-                <a href="rooms.html" class="flork-action-btn action-rooms" id="flork-btn-rooms">
-                  <span>🚪</span> Go to /rooms
-                </a>
-                <button type="button" class="flork-action-btn action-advice" id="flork-btn-advice">
-                  <span>💡</span> Animator Wisdom
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <div class="velvet-divider">
-            <span class="stanchion-post left"></span>
-            <span class="rope-line"></span>
-            <span class="stanchion-post right"></span>
-          </div>
-
-          <!-- VIP Admit One Ticket Stub Card (Driven by assets/ticket.png) -->
-          <section id="ticket" class="cinema-ticket-section">
-            <div class="cinema-ticket-stub">
-              <div class="ticket-part ticket-left">
-                <div class="ticket-header-row">
-                  <span class="ticket-serial">#AC-PREMIERE-2026</span>
-                  <span class="ticket-pass-badge">★ ADMIT ONE ★</span>
-                </div>
-                <div class="ticket-title-row">
-                  <h3 class="ticket-event-name">ABSOLUTE CINEMA</h3>
-                  <span class="ticket-type">PRODUCER & DIRECTOR PASS</span>
-                </div>
-                <div class="ticket-meta-grid">
-                  <div class="meta-item">
-                    <span class="meta-label">PASSHOLDER</span>
-                    <span class="meta-val ticket-user-val">Creator</span>
-                  </div>
-                  <div class="meta-item">
-                    <span class="meta-label">LOCATION</span>
-                    <span class="meta-val">AUDITORIUM</span>
-                  </div>
-                  <div class="meta-item">
-                    <span class="meta-label">SEAT</span>
-                    <span class="meta-val">BOX A • 01</span>
-                  </div>
-                </div>
-                <div class="ticket-footer-row">
-                  <span class="ticket-barcode-text">TICKET CODE: ABS-CINEMA-LIVE-PREMIERE</span>
-                </div>
-              </div>
-
-              <div class="ticket-part ticket-right">
-                <div class="stub-cinema-icon">🎟️</div>
-                <span class="stub-label">BOX OFFICE BALANCE</span>
-                <div class="stub-chip-display">
-                  <span class="stub-coin">🪙</span>
-                  <span class="stub-chip-number" id="ticket-chips-display">0</span>
-                </div>
-                <span class="stub-subtext">AniChips In Wallet</span>
-                <button class="stub-action-btn open-film-modal-btn">
-                  + Book Hall
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <div class="velvet-divider">
-            <span class="stanchion-post left"></span>
-            <span class="rope-line"></span>
-            <span class="stanchion-post right"></span>
-          </div>
-
-          <!-- Box Office Dispatch / Stats Board (Image Placeholders) -->
-          <section id="box-office" class="stats-overview cinema-rateboard">
-            <div class="rateboard-header">
-              <span class="rateboard-badge">DISPATCH</span>
-              <h2>📋 Box Office Metrics & Board</h2>
-            </div>
-            <div class="stats-grid rateboard-grid">
-              <div class="stat-card rateboard-card">
-                <img src="assets/stat-chips.png" alt="AniChips Reserve" class="card-thumb-img">
-                <div class="stat-card-details">
-                  <h3>AniChips Reserve</h3>
-                  <p><strong id="stats-anichips">0</strong> <span class="unit">chips</span></p>
-                </div>
-              </div>
-              <div class="stat-card rateboard-card">
-                <img src="assets/stat-hours.png" alt="Production Time" class="card-thumb-img">
-                <div class="stat-card-details">
-                  <h3>Production Time</h3>
-                  <p><strong id="stats-total-hours">0</strong> <span class="unit">hrs</span></p>
-                </div>
-              </div>
-              <div class="stat-card rateboard-card">
-                <img src="assets/stat-films.png" alt="Screenings Booked" class="card-thumb-img">
-                <div class="stat-card-details">
-                  <h3>Screenings Booked</h3>
-                  <p><strong id="stats-animations-count">0</strong> <span class="unit">films</span></p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <div class="velvet-divider">
-            <span class="stanchion-post left"></span>
-            <span class="rope-line"></span>
-            <span class="stanchion-post right"></span>
-          </div>
-
-          <!-- Now Showing / Marquee Theme Board (Image Placeholder) -->
-          <section id="feature-theme" class="weekly-theme marquee-theme-board">
-            <div class="marquee-board-frame">
-              <img src="assets/theme-banner.png" alt="Feature Presentation" class="theme-banner-img">
-              <div class="marquee-board-content">
-                <span class="marquee-season">NOW SHOWING • SEASON 1</span>
-                <h2>WEEK 1 FEATURE PRESENTATION</h2>
-                <div class="theme-banner-box">
-                  <span class="theme-label">PREMIERE THEME:</span>
-                  <span class="theme-text">Not Yet Thought of... (Unveiling Soon)</span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <div class="velvet-divider">
-            <span class="stanchion-post left"></span>
-            <span class="rope-line"></span>
-            <span class="stanchion-post right"></span>
-          </div>
-
-          <!-- Auditorium Screenings / Animation List -->
-          <section id="screenings" class="animations auditorium-section">
-            <div class="section-title-row auditorium-header-row">
-              <div class="auditorium-title-wrap">
-                <span class="auditorium-badge">PROJECTION BOOTH</span>
-                <h2>🎬 Auditorium Screenings:</h2>
-              </div>
-              <button class="create-film-btn-small open-film-modal-btn book-hall-btn">
-                🎟️ + Book A Premiere Hall
-              </button>
-            </div>
-            <div class="animation-list cinema-hall-list" id="animation-list">
-              <div class="empty-hall-box">
-                <span class="empty-hall-icon">🎞️</span>
-                <h3>The Projection Booth Is Silent</h3>
-                <p>No short films or cinema halls are booked yet! Step up to the Box Office counter to register your first film for the live premiere.</p>
-                <button class="empty-book-btn open-film-modal-btn">
-                  🎟️ Register Your Film Now
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <div class="velvet-divider">
-            <span class="stanchion-post left"></span>
-            <span class="rope-line"></span>
-            <span class="stanchion-post right"></span>
-          </div>
-        </main>
-
-        <!-- Reception Footer -->
-        <footer class="reception-footer">
-          <div class="footer-marquee">
-            <h1><b>Absolute Cinema Hall</b></h1>
-            <p class="footer-tagline">Crafted with &lt;3 by @CreatorPoints • A Hack Club YSWS</p>
-          </div>
-          <div class="footer-links-row">
-            <a href="https://app.slack.com/client/E09V59WQY1E/C0C4S835R4L" target="_blank" class="footer-slack-link">
-              🛎️ Ring Reception Desk on Slack
-            </a>
-          </div>
-          <p class="footer-trivia">🍿 Fun fact: this was coded (partly) in a mobile terminal using termux and nano, then Acode 💀</p>
-        </footer>
-      </div>
-    </div>
-
-    <!-- Booking Modal (The Box Office Counter) -->
-    <div id="film-modal" class="modal-overlay cinema-modal-overlay">
-      <div class="modal-content cinema-boxoffice-modal">
-        <div class="modal-header boxoffice-header">
-          <div class="boxoffice-title-wrap">
-            <span class="boxoffice-badge">BOX OFFICE COUNTER</span>
-            <h2>🎟️ Register Premiere Hall</h2>
-          </div>
-          <button type="button" id="close-film-x" class="modal-close-x" aria-label="Close modal">&times;</button>
-        </div>
-        <p class="modal-subtitle">Submit your short film details & prepare your custom cinema room for the live premiere!</p>
-        <div id="modal-feedback-msg" style="display: none; font-size: 14px; margin-bottom: 12px; padding: 10px 14px; border-radius: 8px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444;"></div>
-        <form id="submission-form" class="modal-form cinema-booking-form">
-          <div class="form-group">
-            <label for="film-title">🎞️ Short Film Title *</label>
-            <input type="text" id="film-title" name="title" placeholder="e.g. Midnight Run, Echoes of Light" required>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="film-software">🛠️ Animation Tools / Software Used *</label>
-              <input type="text" id="film-software" name="software" placeholder="e.g. Blender, Maya, Krita, Flipaclip" required>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="film-banner">🖼️ Movie Poster / Banner Image URL</label>
-            <input type="url" id="film-banner" name="bannerUrl" placeholder="https://... (direct link to your poster/banner)">
-          </div>
-          <div class="form-group">
-            <label for="film-notes">📝 Film Synopsis & Cinema Hall Notes</label>
-            <textarea id="film-notes" name="notes" rows="3" placeholder="Tell the audience and judges about your film and your virtual cinema hall room..."></textarea>
-          </div>
-          <div class="modal-actions boxoffice-actions">
-            <button type="button" id="close-film-modal" class="cancel-modal-btn">Cancel</button>
-            <button type="submit" class="submit-modal-btn book-hall-confirm-btn">
-              🎟️ Confirm Hall Booking
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-    <script src="js/authfetch.js"></script>
-    <script src="js/lobby.js"></script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Absolute Cinema</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.scene{position:relative;width:min(100vw,calc(100vh*16/9));height:min(100vh,calc(100vw*9/16));aspect-ratio:16/9}
+.scene img,.scene video{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;object-fit:contain}
+.scene video{display:none;pointer-events:none}
+.hotspot{position:absolute;cursor:pointer;outline:none;text-decoration:none;z-index:10}
+.hotspot-door{left:56%;top:24%;width:20%;height:63%}
+.hotspot-flork{left:10%;top:28%;width:35%;height:59%}
+.nav-arrow-left{position:absolute;left:2%;top:50%;transform:translateY(-50%);width:clamp(36px,4vw,50px);height:clamp(36px,4vw,50px);border-radius:50%;background:rgba(18,18,22,0.72);border:1.5px solid rgba(255,255,255,0.3);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:30;text-decoration:none;transition:transform .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease;box-shadow:0 4px 14px rgba(0,0,0,0.6);backdrop-filter:blur(6px)}
+.nav-arrow-left:hover{background:rgba(255,255,255,0.25);border-color:#fff;transform:translateY(-50%) scale(1.12);box-shadow:0 0 18px rgba(255,255,255,0.4)}
+.nav-arrow-left svg{width:55%;height:55%;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
+.nav-arrow-left:hover svg{transform:translateX(-2px)}
+</style>
+</head>
+<body>
+<div class="scene">
+<img src="assets/dashboard-flork.png" alt="Absolute Cinema" id="dash-img">
+<video id="flork-anim" playsinline muted preload="auto"></video>
+<a href="rooms.html" class="hotspot hotspot-door" title="Screening Rooms (/rooms)"></a>
+<a href="#" class="hotspot hotspot-flork" id="hotspot-flork" title="Flork"></a>
+<a href="index.html" class="nav-arrow-left" title="Back to Home" aria-label="Back to Home"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
+</div>
+<script>
+const s=new URLSearchParams(window.location.search).get('session');
+if(s){localStorage.setItem('cinema_session',s);history.replaceState({},document.title,window.location.pathname)}
+const img=document.getElementById('dash-img');
+const vid=document.getElementById('flork-anim');
+const florkBtn=document.getElementById('hotspot-flork');
+let state='awake';
+let sleepTimer=null;
+let glanceCount=0;
+function playVid(src,onEnd){
+if(!vid)return;
+vid.src=src;
+vid.currentTime=0;
+vid.style.display='block';
+vid.play().catch(()=>{vid.style.display='none';if(onEnd)onEnd();});
+vid.onended=()=>{
+vid.style.display='none';
+if(onEnd)onEnd();
+};
+}
+function wakeUp(){
+if(sleepTimer){clearTimeout(sleepTimer);sleepTimer=null;}
+if(state==='waking')return;
+state='waking';
+playVid('assets/flork/flork-wake.mp4',()=>{
+state='awake';
+img.src='assets/dashboard-flork.png';
+scheduleNext();
+});
+}
+function startSleep(){
+state='falling_asleep';
+glanceCount=0;
+playVid('assets/flork/flork-sleep.mp4',()=>{
+state='asleep';
+img.src='assets/flork/flork-sleep.png';
+const sleepDuration=Math.random()*4000+5000;
+sleepTimer=setTimeout(wakeUp,sleepDuration);
+});
+}
+function playGlance(){
+state='glancing';
+glanceCount++;
+playVid('assets/flork/flork-see.mp4',()=>{
+state='awake';
+img.src='assets/dashboard-flork.png';
+scheduleNext();
+});
+}
+function randomAction(){
+if(state!=='awake')return;
+if(glanceCount>=1||Math.random()<0.55){
+startSleep();
+}else{
+playGlance();
+}
+}
+function scheduleNext(fast){
+if(state!=='awake')return;
+const delay=fast?(Math.random()*1500+2000):(Math.random()*2500+3000);
+setTimeout(randomAction,delay);
+}
+if(florkBtn){
+florkBtn.addEventListener('click',(e)=>{
+e.preventDefault();
+if(state==='asleep'||state==='falling_asleep'){
+wakeUp();
+}else if(state==='awake'){
+startSleep();
+}
+});
+}
+scheduleNext(true);
+</script>
+</body>
 </html>

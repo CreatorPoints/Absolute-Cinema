@@ -72,9 +72,16 @@ function renderIndexSignedInState(userData, isAdmin) {
   `;
 }
 
+const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
 if (!token) {
   if (isProtectedPage) {
-    window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
+    if (isLocalhost) {
+      document.body.classList.remove('auth-pending');
+      console.log("Localhost preview mode: auth redirect bypassed.");
+    } else {
+      window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
+    }
   } else {
     fetch("https://absolute-cinema-manager.hackclub.app/api/me", {
       credentials: "include",
@@ -92,7 +99,7 @@ if (!token) {
         window.userRole = userData.role || (isAdmin ? "admin" : "participant");
 
         if (isProtectedPage) {
-          if (!isAdmin) {
+          if (!isAdmin && !isLocalhost) {
             window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
             return;
           }
@@ -138,7 +145,7 @@ if (!token) {
     window.userRole = role;
 
     if (isProtectedPage) {
-      if (!isAdmin) {
+      if (!isAdmin && !isLocalhost) {
         // Participants & reviewers cannot access the dashboard/rooms during WIP
         window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
         return;
@@ -190,6 +197,10 @@ function initIndexEmailHandler() {
   const adminEmails = ["creatorpoints.dev@gmail.com", "ghoshsoumyadeep48@gmail.com"];
   const targetDashboard = window.location.protocol === "file:" ? "dashboard.html" : "/dashboard.html";
 
+  if (signinLink && !signinLink.href.includes("return_to") && signinLink.href.includes("/login")) {
+    signinLink.href = "https://absolute-cinema-manager.hackclub.app/login?return_to=" + encodeURIComponent(window.location.origin);
+  }
+
   async function handleCreatorRedirect(e) {
     const rawVal = emailInput ? emailInput.value.trim().toLowerCase() : "";
     const placeholderVal = emailInput ? emailInput.placeholder.trim().toLowerCase() : "";
@@ -229,8 +240,10 @@ function initIndexEmailHandler() {
       } catch (err) {
         console.warn("Session check error:", err);
       }
+      const loginBase = "https://absolute-cinema-manager.hackclub.app/login";
+      const loginUrl = loginBase + "?return_to=" + encodeURIComponent(window.location.origin);
       localStorage.setItem("cinema_new_arrival", "true");
-      window.location.href = "https://absolute-cinema-manager.hackclub.app/login";
+      window.location.href = loginUrl;
     }
   }
 
@@ -256,7 +269,7 @@ function initIndexEmailHandler() {
         }
       } else {
         if (signinLink) {
-          signinLink.setAttribute("href", "https://absolute-cinema-manager.hackclub.app/login");
+          signinLink.setAttribute("href", "https://absolute-cinema-manager.hackclub.app/login?return_to=" + encodeURIComponent(window.location.origin));
         }
       }
     });
@@ -264,6 +277,10 @@ function initIndexEmailHandler() {
     if (adminEmails.includes(emailInput.value.trim().toLowerCase())) {
       if (signinLink) {
         signinLink.setAttribute("href", targetDashboard);
+      }
+    } else {
+      if (signinLink) {
+        signinLink.setAttribute("href", "https://absolute-cinema-manager.hackclub.app/login?return_to=" + encodeURIComponent(window.location.origin));
       }
     }
   }
