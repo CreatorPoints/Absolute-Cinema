@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Absolute Cinema</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .scene{position:relative;width:min(100vw,calc(100vh*16/9));height:min(100vh,calc(100vw*9/16));aspect-ratio:16/9}
@@ -13,17 +16,29 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hid
 .hotspot{position:absolute;cursor:pointer;outline:none;text-decoration:none;z-index:10}
 .hotspot-door{left:56%;top:24%;width:20%;height:63%}
 .hotspot-flork{left:10%;top:28%;width:35%;height:59%}
-.nav-arrow-left{position:absolute;left:2%;top:50%;transform:translateY(-50%);width:clamp(36px,4vw,50px);height:clamp(36px,4vw,50px);border-radius:50%;background:rgba(18,18,22,0.72);border:1.5px solid rgba(255,255,255,0.3);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:30;text-decoration:none;transition:transform .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease;box-shadow:0 4px 14px rgba(0,0,0,0.6);backdrop-filter:blur(6px)}
-.nav-arrow-left:hover{background:rgba(255,255,255,0.25);border-color:#fff;transform:translateY(-50%) scale(1.12);box-shadow:0 0 18px rgba(255,255,255,0.4)}
-.nav-arrow-left svg{width:55%;height:55%;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
-.nav-arrow-left:hover svg{transform:translateX(-2px)}
+.nav-arrow-left{position:absolute;left:2%;top:50%;transform:translateY(-50%);width:clamp(36px,4vw,44px);height:clamp(36px,4vw,44px);border-radius:4px;background:#fff;border:2px solid #000;color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:30;text-decoration:none;box-shadow:none}
+.nav-arrow-left:hover{background:#e5e5e5}
+.nav-arrow-left svg{width:55%;height:55%;stroke:#000;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.flork-bubble-wrap{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:20;display:none}
+.flork-bubble-wrap.active{display:block;animation:bubblePop .22s cubic-bezier(0.16,1,0.3,1)}
+.bubble-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.bubble-text{position:absolute;left:30%;top:6.5%;width:36%;height:21%;display:block;text-align:left;color:#000;font-family:'Poppins',sans-serif;font-weight:600;font-size:clamp(12px,1.4vw,17px);line-height:1.35;user-select:none;box-sizing:border-box;padding:clamp(8px,1.2vw,14px) clamp(10px,1.4vw,16px);word-break:break-word}
+@keyframes bubblePop{0%{transform:scale(0.85);opacity:0;transform-origin:35% 25%}100%{transform:scale(1);opacity:1;transform-origin:35% 25%}}
+.ans-btn{position:absolute;right:2%;top:50%;transform:translateY(-50%);background:#fff;border:2px solid #000;color:#000;padding:10px 16px;border-radius:4px;font-family:'Poppins',sans-serif;font-size:clamp(12px,1.4vw,15px);font-weight:600;cursor:pointer;z-index:30;box-shadow:none;display:none}
+.ans-btn.active{display:block}
+.ans-btn:hover{background:#e5e5e5}
 </style>
 </head>
 <body>
 <div class="scene">
 <img src="assets/dashboard-flork.png" alt="Absolute Cinema" id="dash-img">
 <video id="flork-anim" playsinline muted preload="auto"></video>
-<a href="rooms.html" class="hotspot hotspot-door" title="Screening Rooms (/rooms)"></a>
+<div class="flork-bubble-wrap" id="flork-bubble">
+<img src="assets/flork/speech-still.png" alt="" class="bubble-bg">
+<div class="bubble-text"></div>
+</div>
+<button class="ans-btn" id="ans-btn">Oh, i dont have it!</button>
+<a href="rooms.html" class="hotspot hotspot-door" id="hotspot-door" title="Screening Rooms (/rooms)"></a>
 <a href="#" class="hotspot hotspot-flork" id="hotspot-flork" title="Flork"></a>
 <a href="index.html" class="nav-arrow-left" title="Back to Home" aria-label="Back to Home"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
 </div>
@@ -33,9 +48,43 @@ if(s){localStorage.setItem('cinema_session',s);history.replaceState({},document.
 const img=document.getElementById('dash-img');
 const vid=document.getElementById('flork-anim');
 const florkBtn=document.getElementById('hotspot-flork');
+const doorBtn=document.getElementById('hotspot-door');
+const bubble=document.getElementById('flork-bubble');
+const bubbleText=document.querySelector('.bubble-text');
+const ansBtn=document.getElementById('ans-btn');
 let state='awake';
 let sleepTimer=null;
+let actionTimer=null;
+let typeTimer=null;
 let glanceCount=0;
+function typeText(str,onDone){
+if(typeTimer){clearInterval(typeTimer);typeTimer=null;}
+if(!bubbleText)return;
+bubbleText.textContent='';
+let idx=0;
+typeTimer=setInterval(()=>{
+if(idx<str.length){
+bubbleText.textContent+=str[idx];
+idx++;
+}else{
+clearInterval(typeTimer);
+typeTimer=null;
+if(onDone)onDone();
+}
+},35);
+}
+function showBubble(){
+if(bubble)bubble.classList.add('active');
+typeText('Wait, where is your ticket?',()=>{
+if(ansBtn)ansBtn.classList.add('active');
+});
+}
+function hideBubble(){
+if(typeTimer){clearInterval(typeTimer);typeTimer=null;}
+if(bubble)bubble.classList.remove('active');
+if(ansBtn)ansBtn.classList.remove('active');
+if(bubbleText)bubbleText.textContent='';
+}
 function playVid(src,onEnd){
 if(!vid)return;
 vid.src=src;
@@ -47,7 +96,20 @@ vid.style.display='none';
 if(onEnd)onEnd();
 };
 }
+function askTicket(){
+if(sleepTimer){clearTimeout(sleepTimer);sleepTimer=null;}
+if(actionTimer){clearTimeout(actionTimer);actionTimer=null;}
+if(state==='questioning')return;
+state='questioning';
+hideBubble();
+playVid('assets/flork/flork-question.mp4',()=>{
+state='question_awaiting';
+img.src='assets/flork/flork-question-still.png';
+showBubble();
+});
+}
 function wakeUp(){
+hideBubble();
 if(sleepTimer){clearTimeout(sleepTimer);sleepTimer=null;}
 if(state==='waking')return;
 state='waking';
@@ -58,6 +120,7 @@ scheduleNext();
 });
 }
 function startSleep(){
+hideBubble();
 state='falling_asleep';
 glanceCount=0;
 playVid('assets/flork/flork-sleep.mp4',()=>{
@@ -68,6 +131,7 @@ sleepTimer=setTimeout(wakeUp,sleepDuration);
 });
 }
 function playGlance(){
+hideBubble();
 state='glancing';
 glanceCount++;
 playVid('assets/flork/flork-see.mp4',()=>{
@@ -87,7 +151,14 @@ playGlance();
 function scheduleNext(fast){
 if(state!=='awake')return;
 const delay=fast?(Math.random()*1500+2000):(Math.random()*2500+3000);
-setTimeout(randomAction,delay);
+if(actionTimer)clearTimeout(actionTimer);
+actionTimer=setTimeout(randomAction,delay);
+}
+if(doorBtn){
+doorBtn.addEventListener('click',(e)=>{
+e.preventDefault();
+askTicket();
+});
 }
 if(florkBtn){
 florkBtn.addEventListener('click',(e)=>{
@@ -96,6 +167,8 @@ if(state==='asleep'||state==='falling_asleep'){
 wakeUp();
 }else if(state==='awake'){
 startSleep();
+}else if(state==='question_awaiting'){
+askTicket();
 }
 });
 }
