@@ -26,10 +26,15 @@ const isHomePage =
 
 function checkIsAdminUser(userData) {
   if (!userData) return false;
+  if (userData.email && userData.email.toLowerCase().includes("ghoshsoumyadeep")) {
+    userData.role = "participant";
+    userData.isAdmin = false;
+    userData.is_admin = 0;
+    return false;
+  }
   if (userData.isAdmin || userData.is_admin === 1 || userData.role === "admin") return true;
   if (userData.email && (
     userData.email.toLowerCase() === "creatorpoints.dev@gmail.com" ||
-    userData.email.toLowerCase() === "ghoshsoumyadeep48@gmail.com" ||
     userData.email.toLowerCase() === "brendan@hackclub.com"
   )) return true;
   return false;
@@ -195,7 +200,7 @@ function initIndexEmailHandler() {
 
   if (!emailInput && !signinBtn && !signinLink) return;
 
-  const adminEmails = ["creatorpoints.dev@gmail.com", "ghoshsoumyadeep48@gmail.com", "brendan@hackclub.com"];
+  const adminEmails = ["creatorpoints.dev@gmail.com", "brendan@hackclub.com"];
   const targetDashboard = window.location.protocol === "file:" ? "dashboard.html" : "/dashboard.html";
 
   if (signinLink && !signinLink.href.includes("return_to") && signinLink.href.includes("/login")) {

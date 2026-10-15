@@ -1,136 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Virtual Screening Rooms — Absolute Cinema</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="stylesheet" href="css/dash.css">
-</head>
-<body class="cinema-hall-body auth-pending">
-<div class="rooms-main">
-<header class="rooms-top-nav">
-<a href="dashboard.html" class="lobby-back-link" id="back-to-lobby-btn">🚪 Return to Reception Lobby</a>
-<div class="hud-badge">
-<span>🪙</span>
-<span id="anichips-balance">0</span>
-<span class="hud-label">AniChips</span>
-</div>
-<button class="hud-exit-btn" onclick="logoutCinema()">Exit</button>
-</header>
-<div class="rooms-header">
-<h1>Screening Rooms</h1>
-<p>Welcome to the screening hall, <span id="username-display">...</span>. Live premiere broadcasts take place here.</p>
-</div>
-<div class="wip-banner">
-<span class="wip-icon">🛎️</span>
-<div class="wip-text-wrap">
-<p class="wip-message">CreatorPoints is busy making the virtual screening rooms &amp; iframe player</p>
-</div>
-</div>
-<section class="auditorium-screen-frame">
-<div class="screen-header-bar">
-<div class="screen-stage-badge">
-<span>AUDITORIUM 1 • MAIN STAGE</span>
-</div>
-<span class="screen-status">STATUS: CALIBRATING LENS 📽️</span>
-</div>
-<div class="screen-theatre-display">
-<div class="screen-inner-content">
-<div class="projector-icon">📽️</div>
-<h2>PREMIERE SCREENING STAGE</h2>
-<p>During festival premiere night, all approved short films will be screened live right here on this stage with synchronized audience seating, live reactions, and instant voting!</p>
-<div class="screen-actions">
-<button class="create-film-btn open-film-modal-btn">🎟️ Book / Submit Film for Premiere</button>
-<a href="dashboard.html" class="lobby-back-link">🛎️ Back to Reception Desk</a>
-</div>
-</div>
-</div>
-</section>
-<section>
-<h2 class="section-title">Scheduled Screening Rooms</h2>
-<div class="rooms-directory-grid">
-<div class="auditorium-card">
-<div class="auditorium-card-header">
-<span class="auditorium-badge">ROOM #01</span>
-<span class="auditorium-status ready">PREPPING</span>
-</div>
-<h3>Auditorium A: Feature Presentation</h3>
-<p>The main premiere theater for top-billed animated short films and season finalists.</p>
-<button class="open-film-modal-btn stub-action-btn">+ Reserve Seat</button>
-</div>
-<div class="auditorium-card">
-<div class="auditorium-card-header">
-<span class="auditorium-badge">ROOM #02</span>
-<span class="auditorium-status">SCHEDULED</span>
-</div>
-<h3>Auditorium B: Indie Animation Showcase</h3>
-<p>Community spotlight room for experimental shorts, frame-by-frame tests, and community passion projects.</p>
-<button class="open-film-modal-btn stub-action-btn">+ Reserve Seat</button>
-</div>
-<div class="auditorium-card">
-<div class="auditorium-card-header">
-<span class="auditorium-badge">ROOM #03</span>
-<span class="auditorium-status">SCHEDULED</span>
-</div>
-<h3>Auditorium C: Midnight Animators Lab</h3>
-<p>Open testing hall for animators to preview their custom room iframes and sound designs before the premiere.</p>
-<button class="open-film-modal-btn stub-action-btn">+ Reserve Seat</button>
-</div>
-</div>
-</section>
-</div>
-<div id="create-film-modal" class="modal-backdrop">
-<div class="modal-card">
-<div class="modal-header">
-<h2 class="modal-title">Book Premiere Screening Hall</h2>
-<button id="close-film-modal-x" class="close-btn">&times;</button>
-</div>
-<form id="create-film-form">
-<div class="form-group">
-<label for="film-title">Short Film Title *</label>
-<input type="text" id="film-title" name="title" placeholder="e.g. Midnight Run, Echoes of Light" required>
-</div>
-<div class="form-group">
-<label for="film-software">Animation Tools / Software Used *</label>
-<input type="text" id="film-software" name="software" placeholder="e.g. Blender, Maya, Krita, Flipaclip" required>
-</div>
-<div class="form-group">
-<label for="film-banner">Movie Poster / Banner Image URL</label>
-<input type="url" id="film-banner" name="bannerUrl" placeholder="https://... (direct link to your poster/banner)">
-</div>
-<div class="form-group">
-<label for="film-notes">Film Synopsis &amp; Cinema Hall Notes</label>
-<textarea id="film-notes" name="notes" rows="3" placeholder="Tell the audience and judges about your film..."></textarea>
-</div>
-<div class="modal-actions">
-<button type="button" id="close-film-modal" class="cancel-modal-btn">Cancel</button>
-<button type="submit" class="submit-modal-btn">Confirm Hall Booking</button>
-</div>
-</form>
-</div>
-</div>
-<script src="js/authfetch.js"></script>
-<script>
-const backBtn = document.getElementById('back-to-lobby-btn');
-if (backBtn) {
-  backBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    window.location.href = window.location.protocol === 'file:' ? 'dashboard.html' : '/dashboard.html';
-  });
-}
-const modal = document.getElementById('create-film-modal');
-const openBtns = document.querySelectorAll('.open-film-modal-btn');
-const closeBtn = document.getElementById('close-film-modal');
-const closeX = document.getElementById('close-film-modal-x');
-openBtns.forEach(btn => btn.addEventListener('click', () => modal?.classList.add('active')));
-closeBtn?.addEventListener('click', () => modal?.classList.remove('active'));
-closeX?.addEventListener('click', () => modal?.classList.remove('active'));
-if (modal) {
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) modal.classList.remove('active');
-  });
-}
-</script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Virtual Screening Rooms — Absolute Cinema</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/dash.css">
+  </head>
+  <body class="cinema-hall-body auth-pending">
+    <div class="rooms-main">
+      <header class="rooms-top-nav">
+        <a href="dashboard.html" class="lobby-back-link" id="back-to-lobby-btn">🚪 Return to Reception Lobby</a>
+        <div class="hud-badge">
+          <span>🪙</span>
+          <span id="anichips-balance">0</span>
+          <span class="hud-label">AniChips</span>
+        </div>
+        <button class="hud-exit-btn" onclick="logoutCinema()">Exit</button>
+      </header>
+      <div class="rooms-header">
+        <h1>Screening Rooms</h1>
+        <p>Welcome to the screening hall, <span id="username-display">...</span>. Live premiere broadcasts take place here.</p>
+      </div>
+      <div class="wip-banner">
+        <span class="wip-icon">🛎️</span>
+        <div class="wip-text-wrap">
+          <p class="wip-message">CreatorPoints is busy making the virtual screening rooms &amp; iframe player</p>
+        </div>
+      </div>
+      <section class="auditorium-screen-frame">
+        <div class="screen-header-bar">
+          <div class="screen-stage-badge">
+            <span>AUDITORIUM 1 • MAIN STAGE</span>
+          </div>
+          <span class="screen-status">STATUS: CALIBRATING LENS 📽️</span>
+        </div>
+        <div class="screen-theatre-display">
+          <div class="screen-inner-content">
+            <div class="projector-icon">📽️</div>
+            <h2>PREMIERE SCREENING STAGE</h2>
+            <p>During festival premiere night, all approved short films will be screened live right here on this stage with synchronized audience seating, live reactions, and instant voting!</p>
+            <div class="screen-actions">
+              <button class="create-film-btn open-film-modal-btn">🎟️ Book / Submit Film for Premiere</button>
+              <a href="dashboard.html" class="lobby-back-link">🛎️ Back to Reception Desk</a>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h2 class="section-title">Scheduled Screening Rooms</h2>
+        <div class="rooms-directory-grid">
+          <div class="auditorium-card">
+            <div class="auditorium-card-header">
+              <span class="auditorium-badge">ROOM #01</span>
+              <span class="auditorium-status ready">PREPPING</span>
+            </div>
+            <h3>Auditorium A: Feature Presentation</h3>
+            <p>The main premiere theater for top-billed animated short films and season finalists.</p>
+            <button class="open-film-modal-btn stub-action-btn">+ Reserve Seat</button>
+          </div>
+          <div class="auditorium-card">
+            <div class="auditorium-card-header">
+              <span class="auditorium-badge">ROOM #02</span>
+              <span class="auditorium-status">SCHEDULED</span>
+            </div>
+            <h3>Auditorium B: Indie Animation Showcase</h3>
+            <p>Community spotlight room for experimental shorts, frame-by-frame tests, and community passion projects.</p>
+            <button class="open-film-modal-btn stub-action-btn">+ Reserve Seat</button>
+          </div>
+          <div class="auditorium-card">
+            <div class="auditorium-card-header">
+              <span class="auditorium-badge">ROOM #03</span>
+              <span class="auditorium-status">SCHEDULED</span>
+            </div>
+            <h3>Auditorium C: Midnight Animators Lab</h3>
+            <p>Open testing hall for animators to preview their custom room iframes and sound designs before the premiere.</p>
+            <button class="open-film-modal-btn stub-action-btn">+ Reserve Seat</button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div id="create-film-modal" class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 class="modal-title">Book Premiere Screening Hall</h2>
+          <button id="close-film-modal-x" class="close-btn">&times;</button>
+        </div>
+        <form id="create-film-form">
+          <div class="form-group">
+            <label for="film-title">Short Film Title *</label>
+            <input type="text" id="film-title" name="title" placeholder="e.g. Midnight Run, Echoes of Light" required>
+          </div>
+          <div class="form-group">
+            <label for="film-software">Animation Tools / Software Used *</label>
+            <input type="text" id="film-software" name="software" placeholder="e.g. Blender, Maya, Krita, Flipaclip" required>
+          </div>
+          <div class="form-group">
+            <label for="film-banner">Movie Poster / Banner Image URL</label>
+            <input type="url" id="film-banner" name="bannerUrl" placeholder="https://... (direct link to your poster/banner)">
+          </div>
+          <div class="form-group">
+            <label for="film-notes">Film Synopsis &amp; Cinema Hall Notes</label>
+            <textarea id="film-notes" name="notes" rows="3" placeholder="Tell the audience and judges about your film..."></textarea>
+          </div>
+          <div class="modal-actions">
+            <button type="button" id="close-film-modal" class="cancel-modal-btn">Cancel</button>
+            <button type="submit" class="submit-modal-btn">Confirm Hall Booking</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="js/authfetch.js"></script>
+    <script>
+      const backBtn = document.getElementById('back-to-lobby-btn');
+      if (backBtn) {
+        backBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.href = window.location.protocol === 'file:' ? 'dashboard.html' : '/dashboard.html';
+        });
+      }
+      const modal = document.getElementById('create-film-modal');
+      const openBtns = document.querySelectorAll('.open-film-modal-btn');
+      const closeBtn = document.getElementById('close-film-modal');
+      const closeX = document.getElementById('close-film-modal-x');
+      openBtns.forEach(btn => btn.addEventListener('click', () => modal?.classList.add('active')));
+      closeBtn?.addEventListener('click', () => modal?.classList.remove('active'));
+      closeX?.addEventListener('click', () => modal?.classList.remove('active'));
+      if (modal) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) modal.classList.remove('active');
+        });
+      }
+    </script>
+  </body>
 </html>

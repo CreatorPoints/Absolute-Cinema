@@ -1,178 +1,783 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Absolute Cinema</title>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-html,body{margin:0;padding:0;width:100%;height:100%;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.scene{position:relative;width:min(100vw,calc(100vh*16/9));height:min(100vh,calc(100vw*9/16));aspect-ratio:16/9}
-.scene img,.scene video{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;object-fit:contain}
-.scene video{display:none;pointer-events:none}
-.hotspot{position:absolute;cursor:pointer;outline:none;text-decoration:none;z-index:10}
-.hotspot-door{left:56%;top:24%;width:20%;height:63%}
-.hotspot-flork{left:10%;top:28%;width:35%;height:59%}
-.nav-arrow-left{position:absolute;left:2%;top:50%;transform:translateY(-50%);width:clamp(36px,4vw,44px);height:clamp(36px,4vw,44px);border-radius:4px;background:#fff;border:2px solid #000;color:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:30;text-decoration:none;box-shadow:none}
-.nav-arrow-left:hover{background:#e5e5e5}
-.nav-arrow-left svg{width:55%;height:55%;stroke:#000;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.flork-bubble-wrap{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:20;display:none}
-.flork-bubble-wrap.active{display:block;animation:bubblePop .22s cubic-bezier(0.16,1,0.3,1)}
-.bubble-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
-.bubble-text{position:absolute;left:30%;top:6.5%;width:36%;height:21%;display:block;text-align:left;color:#000;font-family:'Poppins',sans-serif;font-weight:600;font-size:clamp(12px,1.4vw,17px);line-height:1.35;user-select:none;box-sizing:border-box;padding:clamp(8px,1.2vw,14px) clamp(10px,1.4vw,16px);word-break:break-word}
-@keyframes bubblePop{0%{transform:scale(0.85);opacity:0;transform-origin:35% 25%}100%{transform:scale(1);opacity:1;transform-origin:35% 25%}}
-.ans-btn{position:absolute;right:2%;top:50%;transform:translateY(-50%);background:#fff;border:2px solid #000;color:#000;padding:10px 16px;border-radius:4px;font-family:'Poppins',sans-serif;font-size:clamp(12px,1.4vw,15px);font-weight:600;cursor:pointer;z-index:30;box-shadow:none;display:none}
-.ans-btn.active{display:block}
-.ans-btn:hover{background:#e5e5e5}
-</style>
-</head>
-<body>
-<div class="scene">
-<img src="assets/dashboard-flork.png" alt="Absolute Cinema" id="dash-img">
-<video id="flork-anim" playsinline muted preload="auto"></video>
-<div class="flork-bubble-wrap" id="flork-bubble">
-<img src="assets/flork/speech-still.png" alt="" class="bubble-bg">
-<div class="bubble-text"></div>
-</div>
-<button class="ans-btn" id="ans-btn">Oh, i dont have it!</button>
-<a href="rooms.html" class="hotspot hotspot-door" id="hotspot-door" title="Screening Rooms (/rooms)"></a>
-<a href="#" class="hotspot hotspot-flork" id="hotspot-flork" title="Flork"></a>
-<a href="index.html" class="nav-arrow-left" title="Back to Home" aria-label="Back to Home"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
-</div>
-<script>
-const s=new URLSearchParams(window.location.search).get('session');
-if(s){localStorage.setItem('cinema_session',s);history.replaceState({},document.title,window.location.pathname)}
-const img=document.getElementById('dash-img');
-const vid=document.getElementById('flork-anim');
-const florkBtn=document.getElementById('hotspot-flork');
-const doorBtn=document.getElementById('hotspot-door');
-const bubble=document.getElementById('flork-bubble');
-const bubbleText=document.querySelector('.bubble-text');
-const ansBtn=document.getElementById('ans-btn');
-let state='awake';
-let sleepTimer=null;
-let actionTimer=null;
-let typeTimer=null;
-let glanceCount=0;
-function typeText(str,onDone){
-if(typeTimer){clearInterval(typeTimer);typeTimer=null;}
-if(!bubbleText)return;
-bubbleText.textContent='';
-let idx=0;
-typeTimer=setInterval(()=>{
-if(idx<str.length){
-bubbleText.textContent+=str[idx];
-idx++;
-}else{
-clearInterval(typeTimer);
-typeTimer=null;
-if(onDone)onDone();
-}
-},35);
-}
-function showBubble(){
-if(bubble)bubble.classList.add('active');
-typeText('Wait, where is your ticket?',()=>{
-if(ansBtn)ansBtn.classList.add('active');
-});
-}
-function hideBubble(){
-if(typeTimer){clearInterval(typeTimer);typeTimer=null;}
-if(bubble)bubble.classList.remove('active');
-if(ansBtn)ansBtn.classList.remove('active');
-if(bubbleText)bubbleText.textContent='';
-}
-function playVid(src,onEnd){
-if(!vid)return;
-vid.src=src;
-vid.currentTime=0;
-vid.style.display='block';
-vid.play().catch(()=>{vid.style.display='none';if(onEnd)onEnd();});
-vid.onended=()=>{
-vid.style.display='none';
-if(onEnd)onEnd();
-};
-}
-function askTicket(){
-if(sleepTimer){clearTimeout(sleepTimer);sleepTimer=null;}
-if(actionTimer){clearTimeout(actionTimer);actionTimer=null;}
-if(state==='questioning')return;
-state='questioning';
-hideBubble();
-playVid('assets/flork/flork-question.mp4',()=>{
-state='question_awaiting';
-img.src='assets/flork/flork-question-still.png';
-showBubble();
-});
-}
-function wakeUp(){
-hideBubble();
-if(sleepTimer){clearTimeout(sleepTimer);sleepTimer=null;}
-if(state==='waking')return;
-state='waking';
-playVid('assets/flork/flork-wake.mp4',()=>{
-state='awake';
-img.src='assets/dashboard-flork.png';
-scheduleNext();
-});
-}
-function startSleep(){
-hideBubble();
-state='falling_asleep';
-glanceCount=0;
-playVid('assets/flork/flork-sleep.mp4',()=>{
-state='asleep';
-img.src='assets/flork/flork-sleep.png';
-const sleepDuration=Math.random()*4000+5000;
-sleepTimer=setTimeout(wakeUp,sleepDuration);
-});
-}
-function playGlance(){
-hideBubble();
-state='glancing';
-glanceCount++;
-playVid('assets/flork/flork-see.mp4',()=>{
-state='awake';
-img.src='assets/dashboard-flork.png';
-scheduleNext();
-});
-}
-function randomAction(){
-if(state!=='awake')return;
-if(glanceCount>=1||Math.random()<0.55){
-startSleep();
-}else{
-playGlance();
-}
-}
-function scheduleNext(fast){
-if(state!=='awake')return;
-const delay=fast?(Math.random()*1500+2000):(Math.random()*2500+3000);
-if(actionTimer)clearTimeout(actionTimer);
-actionTimer=setTimeout(randomAction,delay);
-}
-if(doorBtn){
-doorBtn.addEventListener('click',(e)=>{
-e.preventDefault();
-askTicket();
-});
-}
-if(florkBtn){
-florkBtn.addEventListener('click',(e)=>{
-e.preventDefault();
-if(state==='asleep'||state==='falling_asleep'){
-wakeUp();
-}else if(state==='awake'){
-startSleep();
-}else if(state==='question_awaiting'){
-askTicket();
-}
-});
-}
-scheduleNext(true);
-</script>
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Absolute Cinema</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .scene {
+        position: relative;
+        width: min(100vw, calc(100vh * 16 / 9));
+        height: min(100vh, calc(100vw * 9 / 16));
+        aspect-ratio: 16/9;
+      }
+
+      .scene img,
+      .scene video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        user-select: none;
+        object-fit: contain;
+      }
+
+      .scene video {
+        display: none;
+        pointer-events: none;
+      }
+
+      .hotspot {
+        position: absolute;
+        cursor: pointer;
+        outline: none;
+        text-decoration: none;
+        z-index: 10;
+      }
+
+      .hotspot-door {
+        left: 56%;
+        top: 24%;
+        width: 20%;
+        height: 63%;
+      }
+
+      .hotspot-flork {
+        left: 10%;
+        top: 28%;
+        width: 35%;
+        height: 59%;
+      }
+
+      .nav-arrow-left,
+      .nav-arrow-right {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: clamp(36px, 4vw, 44px);
+        height: clamp(36px, 4vw, 44px);
+        border-radius: 4px;
+        background: #fff;
+        border: 2px solid #000;
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 30;
+        text-decoration: none;
+        box-shadow: none;
+      }
+
+      .nav-arrow-left {
+        left: 2%;
+      }
+
+      .nav-arrow-right {
+        right: 2%;
+      }
+
+      .nav-arrow-left:hover,
+      .nav-arrow-right:hover {
+        background: #e5e5e5;
+      }
+
+      .nav-arrow-left svg,
+      .nav-arrow-right svg {
+        width: 55%;
+        height: 55%;
+        stroke: #000;
+        stroke-width: 2.5;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .flork-bubble-wrap {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 20;
+        display: none;
+      }
+
+      .flork-bubble-wrap.active {
+        display: block;
+        animation: bubblePop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .bubble-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+      }
+
+      .bubble-text {
+        position: absolute;
+        left: 30%;
+        top: 6.5%;
+        width: 36%;
+        height: 21%;
+        display: block;
+        text-align: left;
+        color: #000;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: clamp(12px, 1.4vw, 17px);
+        line-height: 1.35;
+        user-select: none;
+        box-sizing: border-box;
+        padding: clamp(8px, 1.2vw, 14px) clamp(10px, 1.4vw, 16px);
+        word-break: break-word;
+      }
+
+      @keyframes bubblePop {
+        0% {
+          transform: scale(0.85);
+          opacity: 0;
+          transform-origin: 35% 25%;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+          transform-origin: 35% 25%;
+        }
+      }
+
+      .ans-btn {
+        position: absolute;
+        right: clamp(55px, 6vw, 75px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: #fff;
+        border: 2px solid #000;
+        color: #000;
+        padding: 10px 16px;
+        border-radius: 4px;
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(12px, 1.4vw, 15px);
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 30;
+        box-shadow: none;
+        display: none;
+      }
+
+      .ans-btn.active {
+        display: block;
+      }
+
+      .ans-btn:hover {
+        background: #e5e5e5;
+      }
+
+      .flork-options {
+        position: absolute;
+        right: clamp(55px, 6vw, 75px);
+        top: 50%;
+        transform: translateY(-50%);
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 30;
+        max-width: clamp(200px, 32vw, 360px);
+      }
+
+      .flork-options.active {
+        display: flex;
+      }
+
+      .flork-opt-btn {
+        background: #fff;
+        border: 2px solid #000;
+        color: #000;
+        padding: 10px 16px;
+        border-radius: 4px;
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(12px, 1.4vw, 15px);
+        font-weight: 600;
+        cursor: pointer;
+        text-align: left;
+        box-shadow: none;
+        transition: background 0.15s ease;
+      }
+
+      .flork-opt-btn:hover {
+        background: #e5e5e5;
+      }
+
+      .ticket-overlay {
+        position: absolute;
+        left: 13%;
+        top: 9.7%;
+        width: 75.2%;
+        height: 83%;
+        z-index: 25;
+        display: none;
+        box-sizing: border-box;
+        padding: clamp(14px, 2.2vw, 32px) clamp(16px, 2.8vw, 40px);
+        font-family: 'Poppins', sans-serif;
+        color: #000;
+        pointer-events: auto;
+      }
+
+      .ticket-overlay.active {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .ticket-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px dashed #000;
+        padding-bottom: clamp(6px, 1.2vw, 14px);
+      }
+
+      .ticket-badge {
+        font-family: 'Michroma', sans-serif;
+        font-size: clamp(13px, 1.6vw, 20px);
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+
+      .ticket-no {
+        font-size: clamp(11px, 1.2vw, 15px);
+        font-weight: 700;
+        letter-spacing: 1.5px;
+        background: #000;
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 2px;
+      }
+
+      .ticket-main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(10px, 2vw, 24px);
+        margin: clamp(10px, 1.6vw, 20px) 0;
+      }
+
+      .ticket-col {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(8px, 1.2vw, 16px);
+      }
+
+      .ticket-field {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .ticket-label {
+        font-size: clamp(9px, 0.9vw, 11px);
+        font-weight: 700;
+        color: #555;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+      }
+
+      .ticket-val {
+        font-size: clamp(12px, 1.4vw, 17px);
+        font-weight: 700;
+        color: #000;
+        line-height: 1.25;
+      }
+
+      .ticket-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 2px dashed #000;
+        padding-top: clamp(8px, 1.2vw, 16px);
+        gap: 12px;
+      }
+
+      .ticket-barcode {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .barcode-lines {
+        height: clamp(22px, 3.2vw, 36px);
+        width: clamp(120px, 18vw, 200px);
+        background: repeating-linear-gradient(
+          to right,
+          #000 0px,
+          #000 3px,
+          transparent 3px,
+          transparent 5px,
+          #000 5px,
+          #000 8px,
+          transparent 8px,
+          transparent 12px,
+          #000 12px,
+          #000 14px,
+          transparent 14px,
+          transparent 17px,
+          #000 17px,
+          #000 21px,
+          transparent 21px,
+          transparent 23px
+        );
+      }
+
+      .barcode-text {
+        font-size: clamp(8px, 0.8vw, 10px);
+        font-weight: 600;
+        letter-spacing: 2px;
+        color: #555;
+      }
+
+      .ticket-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .ticket-action-btn {
+        background: #000;
+        color: #fff;
+        border: 2px solid #000;
+        padding: clamp(6px, 1vw, 10px) clamp(12px, 1.6vw, 20px);
+        border-radius: 4px;
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(11px, 1.2vw, 14px);
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+
+      .ticket-action-btn:hover {
+        background: #333;
+      }
+
+      .ticket-close-btn {
+        background: #fff;
+        color: #000;
+        border: 2px solid #000;
+        padding: clamp(6px, 1vw, 10px) clamp(10px, 1.4vw, 16px);
+        border-radius: 4px;
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(11px, 1.2vw, 14px);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+
+      .ticket-close-btn:hover {
+        background: #e5e5e5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="scene">
+      <img src="assets/dashboard-flork.png" alt="Absolute Cinema" id="dash-img">
+      <video id="flork-anim" playsinline muted preload="auto"></video>
+      <div class="flork-bubble-wrap" id="flork-bubble">
+        <img src="assets/flork/speech-still.png" alt="" class="bubble-bg">
+        <div class="bubble-text"></div>
+      </div>
+      <button class="ans-btn" id="ans-btn">Oh, i dont have it!</button>
+      <div class="flork-options" id="flork-options">
+        <button class="flork-opt-btn" type="button" data-action="ticket">I need a ticket</button>
+        <button class="flork-opt-btn" type="button" data-action="who">Who are you?</button>
+        <button class="flork-opt-btn" type="button" data-action="rest">We have only this? where is rest?</button>
+      </div>
+      <a href="rooms.html" class="hotspot hotspot-door" id="hotspot-door" title="Screening Rooms (/rooms)"></a>
+      <a href="#" class="hotspot hotspot-flork" id="hotspot-flork" title="Flork"></a>
+      <a href="index.html" class="nav-arrow-left" title="Back to Home" aria-label="Back to Home">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <a href="rooms.html" class="nav-arrow-right" title="Screening Rooms (/rooms)" aria-label="Screening Rooms">
+        <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <div class="ticket-overlay" id="ticket-overlay">
+        <div class="ticket-top">
+          <div class="ticket-badge">ABSOLUTE CINEMA • PREMIERE PASS</div>
+          <div class="ticket-no">NO. 00842-AC</div>
+        </div>
+        <div class="ticket-main-grid">
+          <div class="ticket-col">
+            <div class="ticket-field">
+              <span class="ticket-label">ATTENDEE / CREATOR</span>
+              <span class="ticket-val" id="ticket-name">GUEST ANIMATOR</span>
+            </div>
+            <div class="ticket-field">
+              <span class="ticket-label">EVENT</span>
+              <span class="ticket-val">HACK CLUB FILM FANTASIA</span>
+            </div>
+            <div class="ticket-field">
+              <span class="ticket-label">PREMIERE VENUE</span>
+              <span class="ticket-val">AUDITORIUM A • MAIN STAGE</span>
+            </div>
+          </div>
+          <div class="ticket-col">
+            <div class="ticket-field">
+              <span class="ticket-label">ACCESS LEVEL</span>
+              <span class="ticket-val">ALL-ACCESS FILMMAKER PASS</span>
+            </div>
+            <div class="ticket-field">
+              <span class="ticket-label">SEAT ALLOCATION</span>
+              <span class="ticket-val">ROW 1 • SEAT 07</span>
+            </div>
+            <div class="ticket-field">
+              <span class="ticket-label">ADMITTANCE</span>
+              <span class="ticket-val">VALID FOR SCREENING ENTRY</span>
+            </div>
+          </div>
+        </div>
+        <div class="ticket-footer">
+          <div class="ticket-barcode">
+            <div class="barcode-lines"></div>
+            <span class="barcode-text">* ABSOLUTE-CINEMA-YSWS-2026 *</span>
+          </div>
+          <div class="ticket-actions">
+            <button type="button" class="ticket-close-btn" id="ticket-close-btn">Return to Lobby</button>
+            <a href="rooms.html" class="ticket-action-btn">Enter Screening Hall &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const s = new URLSearchParams(window.location.search).get('session');
+      if (s) {
+        localStorage.setItem('cinema_session', s);
+        history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      const img = document.getElementById('dash-img');
+      const vid = document.getElementById('flork-anim');
+      const florkBtn = document.getElementById('hotspot-flork');
+      const doorBtn = document.getElementById('hotspot-door');
+      const bubble = document.getElementById('flork-bubble');
+      const bubbleText = document.querySelector('.bubble-text');
+      const ansBtn = document.getElementById('ans-btn');
+      const florkOptions = document.getElementById('flork-options');
+      const florkOptBtns = document.querySelectorAll('.flork-opt-btn');
+
+      const ticketOverlay = document.getElementById('ticket-overlay');
+      const ticketCloseBtn = document.getElementById('ticket-close-btn');
+      const ticketName = document.getElementById('ticket-name');
+
+      let state = 'awake';
+      let sleepTimer = null;
+      let actionTimer = null;
+      let typeTimer = null;
+      let glanceCount = 0;
+
+      new Image().src = 'assets/flork-happy.png';
+      new Image().src = 'assets/flork-happy-hand-down.png';
+      new Image().src = 'assets/flork-see-right.png';
+      new Image().src = 'assets/flork-ticket-still.png';
+      new Image().src = 'assets/ticket-total.png';
+
+      function typeText(str, onDone) {
+        if (typeTimer) {
+          clearInterval(typeTimer);
+          typeTimer = null;
+        }
+        if (!bubbleText) return;
+        bubbleText.textContent = '';
+        let idx = 0;
+        typeTimer = setInterval(() => {
+          if (idx < str.length) {
+            bubbleText.textContent += str[idx];
+            idx++;
+          } else {
+            clearInterval(typeTimer);
+            typeTimer = null;
+            if (onDone) onDone();
+          }
+        }, 35);
+      }
+
+      function showBubble() {
+        if (bubble) bubble.classList.add('active');
+        typeText('Wait, where is your ticket?', () => {
+          if (ansBtn) ansBtn.classList.add('active');
+        });
+      }
+
+      function hideBubble() {
+        if (typeTimer) {
+          clearInterval(typeTimer);
+          typeTimer = null;
+        }
+        if (bubble) bubble.classList.remove('active');
+        if (ansBtn) ansBtn.classList.remove('active');
+        if (florkOptions) florkOptions.classList.remove('active');
+        if (bubbleText) bubbleText.textContent = '';
+      }
+
+      function playVid(src, onEnd) {
+        if (!vid) return;
+        vid.src = src;
+        vid.currentTime = 0;
+        vid.style.display = 'block';
+        vid.play().catch(() => {
+          vid.style.display = 'none';
+          if (onEnd) onEnd();
+        });
+        vid.onended = () => {
+          vid.style.display = 'none';
+          if (onEnd) onEnd();
+        };
+      }
+
+      function askTicket() {
+        if (sleepTimer) {
+          clearTimeout(sleepTimer);
+          sleepTimer = null;
+        }
+        if (actionTimer) {
+          clearTimeout(actionTimer);
+          actionTimer = null;
+        }
+        if (state === 'questioning') return;
+        state = 'questioning';
+        hideBubble();
+        playVid('assets/flork/flork-question.mp4', () => {
+          state = 'question_awaiting';
+          img.src = 'assets/flork/flork-question-still.png';
+          showBubble();
+        });
+      }
+
+      function wakeUp() {
+        hideBubble();
+        if (sleepTimer) {
+          clearTimeout(sleepTimer);
+          sleepTimer = null;
+        }
+        if (state === 'waking') return;
+        state = 'waking';
+        playVid('assets/flork/flork-wake.mp4', () => {
+          state = 'awake';
+          img.src = 'assets/dashboard-flork.png';
+          scheduleNext();
+        });
+      }
+
+      function startSleep() {
+        hideBubble();
+        state = 'falling_asleep';
+        glanceCount = 0;
+        playVid('assets/flork/flork-sleep.mp4', () => {
+          state = 'asleep';
+          img.src = 'assets/flork/flork-sleep.png';
+          const sleepDuration = Math.random() * 4000 + 5000;
+          sleepTimer = setTimeout(wakeUp, sleepDuration);
+        });
+      }
+
+      function playGlance() {
+        hideBubble();
+        state = 'glancing';
+        glanceCount++;
+        playVid('assets/flork/flork-see.mp4', () => {
+          state = 'awake';
+          img.src = 'assets/dashboard-flork.png';
+          scheduleNext();
+        });
+      }
+
+      function randomAction() {
+        if (state !== 'awake') return;
+        if (glanceCount >= 1 || Math.random() < 0.55) {
+          startSleep();
+        } else {
+          playGlance();
+        }
+      }
+
+      function scheduleNext(fast) {
+        if (state !== 'awake') return;
+        const delay = fast ? (Math.random() * 1500 + 2000) : (Math.random() * 2500 + 3000);
+        if (actionTimer) clearTimeout(actionTimer);
+        actionTimer = setTimeout(randomAction, delay);
+      }
+
+      function askHelp() {
+        if (sleepTimer) {
+          clearTimeout(sleepTimer);
+          sleepTimer = null;
+        }
+        if (actionTimer) {
+          clearTimeout(actionTimer);
+          actionTimer = null;
+        }
+        if (vid) {
+          vid.pause();
+          vid.style.display = 'none';
+        }
+        if (ticketOverlay) ticketOverlay.classList.remove('active');
+        state = 'helping';
+        hideBubble();
+        img.src = 'assets/dashboard-flork.png';
+        if (bubble) bubble.classList.add('active');
+        typeText('how may i help you today?', () => {
+          if (florkOptions) florkOptions.classList.add('active');
+        });
+      }
+
+      if (doorBtn) {
+        doorBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          askTicket();
+        });
+      }
+
+      if (florkBtn) {
+        florkBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (state === 'asleep' || state === 'falling_asleep') {
+            hideBubble();
+            if (sleepTimer) {
+              clearTimeout(sleepTimer);
+              sleepTimer = null;
+            }
+            state = 'waking';
+            playVid('assets/flork/flork-wake.mp4', () => {
+              state = 'awake';
+              img.src = 'assets/dashboard-flork.png';
+              askHelp();
+            });
+          } else {
+            askHelp();
+          }
+        });
+      }
+
+      florkOptBtns.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const action = btn.getAttribute('data-action');
+          if (action === 'who') {
+            if (florkOptions) florkOptions.classList.remove('active');
+            state = 'helping';
+            img.src = 'assets/flork-happy.png';
+            if (bubble) bubble.classList.add('active');
+            typeText('I am Flork, your receptionist! Need a ticket or anything else, im here for!', () => {
+              if (state === 'helping') {
+                img.src = 'assets/flork-happy-hand-down.png';
+                if (florkOptions) florkOptions.classList.add('active');
+              }
+            });
+          } else if (action === 'rest') {
+            if (florkOptions) florkOptions.classList.remove('active');
+            state = 'helping';
+            img.src = 'assets/flork-see-right.png';
+            if (bubble) bubble.classList.add('active');
+            typeText('check that side of the lobby, theres more!', () => {
+              if (state === 'helping') {
+                if (florkOptions) florkOptions.classList.add('active');
+              }
+            });
+          } else if (action === 'ticket') {
+            if (florkOptions) florkOptions.classList.remove('active');
+            state = 'helping';
+            hideBubble();
+            let speechTimer = setTimeout(() => {
+              if (state === 'helping') {
+                if (bubble) bubble.classList.add('active');
+                typeText('Aight! I need some information in here!');
+              }
+            }, 415);
+            playVid('assets/flork-ticket.mp4', () => {
+              if (speechTimer) clearTimeout(speechTimer);
+              img.src = 'assets/flork-ticket-still.png';
+              setTimeout(() => {
+                if (state === 'helping') {
+                  hideBubble();
+                  img.src = 'assets/ticket-total.png';
+                  if (ticketOverlay) ticketOverlay.classList.add('active');
+                }
+              }, 1000);
+            });
+          }
+        });
+      });
+
+      function closeTicket() {
+        if (ticketOverlay) ticketOverlay.classList.remove('active');
+        img.src = 'assets/dashboard-flork.png';
+        state = 'awake';
+        scheduleNext(true);
+      }
+
+      if (ticketCloseBtn) {
+        ticketCloseBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          closeTicket();
+        });
+      }
+
+      try {
+        const savedUser = localStorage.getItem('cinema_user');
+        if (savedUser) {
+          const u = JSON.parse(savedUser);
+          const name = u.name || (u.email ? u.email.split('@')[0] : '');
+          if (name && ticketName) {
+            ticketName.textContent = name.toUpperCase();
+          }
+        }
+      } catch (err) {}
+
+      document.addEventListener('click', (e) => {
+        if (state !== 'helping') return;
+        if (ticketOverlay && ticketOverlay.classList.contains('active')) {
+          if (ticketOverlay.contains(e.target)) return;
+          closeTicket();
+          return;
+        }
+        if (florkOptions && florkOptions.contains(e.target)) return;
+        if (florkBtn && florkBtn.contains(e.target)) return;
+        if (doorBtn && doorBtn.contains(e.target)) return;
+        if (e.target.closest && (e.target.closest('.nav-arrow-right') || e.target.closest('.nav-arrow-left'))) return;
+        hideBubble();
+        img.src = 'assets/dashboard-flork.png';
+        state = 'awake';
+        scheduleNext(true);
+      });
+
+      if (ansBtn) {
+        ansBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          hideBubble();
+          state = 'awake';
+          scheduleNext(true);
+        });
+      }
+
+      scheduleNext(true);
+    </script>
+  </body>
 </html>
