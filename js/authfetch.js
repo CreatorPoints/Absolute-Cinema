@@ -29,7 +29,8 @@ function checkIsAdminUser(userData) {
   if (userData.isAdmin || userData.is_admin === 1 || userData.role === "admin") return true;
   if (userData.email && (
     userData.email.toLowerCase() === "creatorpoints.dev@gmail.com" ||
-    userData.email.toLowerCase() === "ghoshsoumyadeep48@gmail.com"
+    userData.email.toLowerCase() === "ghoshsoumyadeep48@gmail.com" ||
+    userData.email.toLowerCase() === "brendan@hackclub.com"
   )) return true;
   return false;
 }
@@ -83,7 +84,7 @@ if (!token) {
       window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
     }
   } else {
-    fetch("https://absolute-cinema-manager.hackclub.app/api/me", {
+    fetch("https://cinema-hall.hackclub.app/api/me", {
       credentials: "include",
       cache: "no-store"
     })
@@ -113,7 +114,7 @@ if (!token) {
   }
 } else {
   // 3. We have a token! Ask the backend who we are.
-  fetch("https://absolute-cinema-manager.hackclub.app/api/me", {
+  fetch("https://cinema-hall.hackclub.app/api/me", {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${token}` // THE VIP PASS
@@ -194,11 +195,11 @@ function initIndexEmailHandler() {
 
   if (!emailInput && !signinBtn && !signinLink) return;
 
-  const adminEmails = ["creatorpoints.dev@gmail.com", "ghoshsoumyadeep48@gmail.com"];
+  const adminEmails = ["creatorpoints.dev@gmail.com", "ghoshsoumyadeep48@gmail.com", "brendan@hackclub.com"];
   const targetDashboard = window.location.protocol === "file:" ? "dashboard.html" : "/dashboard.html";
 
   if (signinLink && !signinLink.href.includes("return_to") && signinLink.href.includes("/login")) {
-    signinLink.href = "https://absolute-cinema-manager.hackclub.app/login?return_to=" + encodeURIComponent(window.location.origin);
+    signinLink.href = "https://cinema-hall.hackclub.app/login?return_to=" + encodeURIComponent(window.location.origin);
   }
 
   async function handleCreatorRedirect(e) {
@@ -225,7 +226,7 @@ function initIndexEmailHandler() {
       }
 
       try {
-        const res = await fetch("https://absolute-cinema-manager.hackclub.app/api/auth/session-by-email", {
+        const res = await fetch("https://cinema-hall.hackclub.app/api/auth/session-by-email", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: currentVal })
@@ -240,7 +241,7 @@ function initIndexEmailHandler() {
       } catch (err) {
         console.warn("Session check error:", err);
       }
-      const loginBase = "https://absolute-cinema-manager.hackclub.app/login";
+      const loginBase = "https://cinema-hall.hackclub.app/login";
       const loginUrl = loginBase + "?return_to=" + encodeURIComponent(window.location.origin);
       localStorage.setItem("cinema_new_arrival", "true");
       window.location.href = loginUrl;
@@ -269,7 +270,7 @@ function initIndexEmailHandler() {
         }
       } else {
         if (signinLink) {
-          signinLink.setAttribute("href", "https://absolute-cinema-manager.hackclub.app/login?return_to=" + encodeURIComponent(window.location.origin));
+          signinLink.setAttribute("href", "https://cinema-hall.hackclub.app/login?return_to=" + encodeURIComponent(window.location.origin));
         }
       }
     });
@@ -280,7 +281,7 @@ function initIndexEmailHandler() {
       }
     } else {
       if (signinLink) {
-        signinLink.setAttribute("href", "https://absolute-cinema-manager.hackclub.app/login?return_to=" + encodeURIComponent(window.location.origin));
+        signinLink.setAttribute("href", "https://cinema-hall.hackclub.app/login?return_to=" + encodeURIComponent(window.location.origin));
       }
     }
   }
@@ -347,7 +348,7 @@ window.logoutCinema = async function() {
   localStorage.removeItem('cinema_session');
   if (currentToken) {
     try {
-      await fetch("https://absolute-cinema-manager.hackclub.app/logout", {
+      await fetch("https://cinema-hall.hackclub.app/logout", {
         method: "POST",
         headers: { "Authorization": `Bearer ${currentToken}` }
       });
@@ -434,7 +435,7 @@ if (isDashboard) {
           headers['Authorization'] = `Bearer ${activeToken}`;
         }
 
-        const res = await fetch('https://absolute-cinema-manager.hackclub.app/api/projects', {
+        const res = await fetch('https://cinema-hall.hackclub.app/api/projects', {
           method: 'POST',
           headers,
           body: JSON.stringify(payload)
@@ -654,11 +655,11 @@ if (isDashboard) {
 
     try {
       const [meRes, projRes] = await Promise.all([
-        fetch('https://absolute-cinema-manager.hackclub.app/api/me', {
+        fetch('https://cinema-hall.hackclub.app/api/me', {
           headers: { 'Authorization': `Bearer ${currentToken}` },
           cache: 'no-store'
         }),
-        fetch('https://absolute-cinema-manager.hackclub.app/api/my-projects', {
+        fetch('https://cinema-hall.hackclub.app/api/my-projects', {
           headers: { 'Authorization': `Bearer ${currentToken}` },
           cache: 'no-store'
         })

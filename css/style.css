@@ -43,4 +43,7 @@ footer a:hover{color:#fff}
 .bg-marquee-row{display:flex;width:100%;overflow:hidden}
 .bg-marquee-content{display:flex;flex-shrink:0;gap:20px}
 .bg-marquee-content img{height:150px;border-radius:8px;object-fit:cover}
-@media(max-width:768px){h1{font-size:24px}.emailbox{width:100%}.signin{width:100%;margin-top:8px}}
+.nav-links{display:flex;align-items:center;gap:18px}
+.nav-link{color:#94a3b8;font-weight:600;font-size:14px;text-decoration:none;transition:color .2s ease}
+.nav-link:hover,.nav-link.active{color:#fff}
+@media(max-width:768px){h1{font-size:24px}.emailbox{width:100%}.signin{width:100%;margin-top:8px}.nav-links{gap:12px}}
