@@ -26,18 +26,7 @@ const isHomePage =
 
 function checkIsAdminUser(userData) {
   if (!userData) return false;
-  if (userData.email && userData.email.toLowerCase().includes("ghoshsoumyadeep")) {
-    userData.role = "participant";
-    userData.isAdmin = false;
-    userData.is_admin = 0;
-    return false;
-  }
-  if (userData.isAdmin || userData.is_admin === 1 || userData.role === "admin") return true;
-  if (userData.email && (
-    userData.email.toLowerCase() === "creatorpoints.dev@gmail.com" ||
-    userData.email.toLowerCase() === "brendan@hackclub.com"
-  )) return true;
-  return false;
+  return Boolean(userData.isAdmin || userData.is_admin === 1 || userData.role === "admin");
 }
 
 function escapeHtml(str) {
