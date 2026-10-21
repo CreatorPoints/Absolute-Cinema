@@ -53,14 +53,9 @@ function renderIndexSignedInState(userData, isAdmin) {
         <span class="user-role-badge ${isAdmin ? 'badge-admin' : 'badge-participant'}">${roleName}</span>
       </div>
       <p class="signed-in-note">You are signed in with Hack Club.</p>
-      
-      <div class="wip-banner">
-        <span class="wip-icon">🚨</span>
-        <p class="wip-message">CreatorPoints is busy making the cinema hall</p>
-      </div>
 
       <div class="signed-in-actions">
-        ${isAdmin ? `<a href="${dashboardUrl}" class="enter-dash-btn"><button class="signin">Enter Dashboard 🛠️</button></a>` : ''}
+        <a href="${dashboardUrl}" class="enter-dash-btn"><button class="signin">Enter Dashboard</button></a>
         <button class="logout-btn" onclick="logoutCinema()">Log out</button>
       </div>
     </div>
@@ -95,10 +90,6 @@ if (!token) {
         window.userRole = userData.role || (isAdmin ? "admin" : "participant");
 
         if (isProtectedPage) {
-          if (!isAdmin && !isLocalhost) {
-            window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
-            return;
-          }
           document.body.classList.remove('auth-pending');
         } else if (isHomePage) {
           renderIndexSignedInState(userData, isAdmin);
@@ -142,12 +133,6 @@ if (!token) {
     window.userRole = role;
 
     if (isProtectedPage) {
-      if (!isAdmin && !isLocalhost) {
-        // Participants & reviewers cannot access the dashboard/rooms during WIP
-        window.location.replace(window.location.protocol === "file:" ? "index.html" : "/");
-        return;
-      }
-      // Admins are authorized! Reveal dashboard/rooms
       document.body.classList.remove('auth-pending');
     }
 
@@ -203,22 +188,30 @@ function initIndexEmailHandler() {
     const placeholderVal = emailInput ? emailInput.placeholder.trim().toLowerCase() : "";
     const currentVal = rawVal || placeholderVal;
 
+    const activeToken = localStorage.getItem("cinema_session");
+    if (activeToken) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (signinBtn) {
+        signinBtn.disabled = true;
+        signinBtn.innerText = "Entering...";
+      }
+      localStorage.setItem("cinema_new_arrival", "true");
+      window.location.replace(targetDashboard);
+      return;
+    }
+
     if (adminEmails.includes(currentVal)) {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
 
-      const activeToken = localStorage.getItem("cinema_session");
-      if (activeToken) {
-        localStorage.setItem("cinema_new_arrival", "true");
-        window.location.replace(targetDashboard);
-        return;
-      }
-
       if (signinBtn) {
         signinBtn.disabled = true;
-        signinBtn.innerText = "Entering... 🎬";
+        signinBtn.innerText = "Entering...";
       }
 
       try {
@@ -241,6 +234,11 @@ function initIndexEmailHandler() {
       const loginUrl = loginBase + "?return_to=" + encodeURIComponent(window.location.origin);
       localStorage.setItem("cinema_new_arrival", "true");
       window.location.href = loginUrl;
+    } else {
+      if (signinBtn) {
+        signinBtn.disabled = true;
+        signinBtn.innerText = "Entering...";
+      }
     }
   }
 
