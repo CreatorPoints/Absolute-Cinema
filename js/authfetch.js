@@ -93,6 +93,11 @@ if (!token) {
             if (userData.ticket.attendee_name) localStorage.setItem('cinema_ticket_name', userData.ticket.attendee_name);
             if (userData.ticket.ticket_no) localStorage.setItem('cinema_ticket_no', userData.ticket.ticket_no);
           }
+        } else {
+          localStorage.removeItem('cinema_has_active_ticket');
+          localStorage.removeItem('cinema_ticket_no');
+          localStorage.removeItem('cinema_ticket_type');
+          localStorage.removeItem('cinema_ticket_name');
         }
         const isAdmin = checkIsAdminUser(userData);
         window.userRole = userData.role || (isAdmin ? "admin" : "participant");
@@ -150,6 +155,11 @@ if (!token) {
         if (userData.ticket.attendee_name) localStorage.setItem('cinema_ticket_name', userData.ticket.attendee_name);
         if (userData.ticket.ticket_no) localStorage.setItem('cinema_ticket_no', userData.ticket.ticket_no);
       }
+    } else {
+      localStorage.removeItem('cinema_has_active_ticket');
+      localStorage.removeItem('cinema_ticket_no');
+      localStorage.removeItem('cinema_ticket_type');
+      localStorage.removeItem('cinema_ticket_name');
     }
     window.userRole = role;
 

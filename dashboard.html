@@ -1035,6 +1035,15 @@
             });
           } else if (action === 'ticket') {
             if (florkOptions) florkOptions.classList.remove('active');
+            if (hasActiveTicket) {
+              state = 'helping';
+              hideBubble();
+              img.src = 'assets/flork-ticket-still.png';
+              showIssuedTicket();
+              if (bubble) bubble.classList.add('active');
+              typeText('You already have an active ticket! Head through the green doors.');
+              return;
+            }
             state = 'helping';
             hideBubble();
             let speechTimer = setTimeout(() => {
@@ -1211,6 +1220,15 @@
                   localStorage.setItem('cinema_ticket_name', ticketData.ticket.attendee_name);
                   if (ticketName) ticketName.value = ticketData.ticket.attendee_name;
                 }
+                if (ticketData.ticket.ticket_no) {
+                  localStorage.setItem('cinema_ticket_no', ticketData.ticket.ticket_no);
+                }
+              } else {
+                hasActiveTicket = false;
+                localStorage.removeItem('cinema_has_active_ticket');
+                localStorage.removeItem('cinema_ticket_no');
+                localStorage.removeItem('cinema_ticket_type');
+                localStorage.removeItem('cinema_ticket_name');
               }
             } catch (_) {}
           }
@@ -1222,7 +1240,17 @@
       }
       syncUserSession();
 
+      let isSubmittingTicket = false;
+
       function giveToFlork() {
+        if (hasActiveTicket) {
+          showIssuedTicket();
+          return;
+        }
+        if (isSubmittingTicket) return;
+        isSubmittingTicket = true;
+        if (giveToFlorkBtn) giveToFlorkBtn.disabled = true;
+
         const selectedType = ticketType ? ticketType.value : 'single room pass';
         const nameVal = ticketName && ticketName.value.trim() ? ticketName.value.trim() : 'GUEST ANIMATOR';
 
@@ -1254,11 +1282,18 @@
 
         typeText("Wait a minute...", () => {
           Promise.all([saveTicketPromise, minDelayPromise]).then(([resData]) => {
+            isSubmittingTicket = false;
+            if (giveToFlorkBtn) giveToFlorkBtn.disabled = false;
             if (state !== 'helping') return;
             hasActiveTicket = true;
             localStorage.setItem('cinema_has_active_ticket', 'true');
-            if (resData && resData.ticket && resData.ticket.ticket_no) {
-              localStorage.setItem('cinema_ticket_no', resData.ticket.ticket_no);
+            const savedTicket = (resData && resData.ticket) ? resData.ticket : {
+              ticket_no: localStorage.getItem('cinema_ticket_no') || ('AC-' + Math.floor(10000 + Math.random() * 90000)),
+              ticket_type: selectedType,
+              attendee_name: nameVal
+            };
+            if (savedTicket.ticket_no) {
+              localStorage.setItem('cinema_ticket_no', savedTicket.ticket_no);
             }
             img.src = 'assets/flork-ticket-still.png';
             showIssuedTicket(savedTicket);
@@ -1274,6 +1309,9 @@
                 }, 4000);
               }
             });
+          }).catch(() => {
+            isSubmittingTicket = false;
+            if (giveToFlorkBtn) giveToFlorkBtn.disabled = false;
           });
         });
       }
