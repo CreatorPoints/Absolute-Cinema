@@ -444,6 +444,176 @@
       .ticket-close-btn:hover {
         background: #e5e5e5;
       }
+
+      /* ============================================================
+         ISSUED TICKET OVERLAY (assets/ticket.png)
+         ============================================================ */
+      .issued-ticket-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 45;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(3px);
+        pointer-events: auto;
+      }
+
+      .issued-ticket-overlay.active {
+        display: flex;
+        animation: ticketPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .cinema-ticket-card {
+        position: relative;
+        width: clamp(290px, 48vw, 650px);
+        aspect-ratio: 688 / 362;
+        filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.75));
+      }
+
+      .ticket-view-close {
+        position: absolute;
+        top: -12px;
+        right: -12px;
+        width: clamp(26px, 2.5vw, 34px);
+        height: clamp(26px, 2.5vw, 34px);
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #000;
+        color: #000;
+        font-size: clamp(16px, 1.8vw, 22px);
+        font-weight: 700;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 55;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+
+      .ticket-view-close:hover {
+        background: #e5e5e5;
+        transform: scale(1.08);
+      }
+
+      .cinema-ticket-stub {
+        width: 100%;
+        height: 100%;
+        background: url("assets/ticket.png") no-repeat center center;
+        background-size: 100% 100%;
+        display: flex;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      .ticket-part.ticket-left {
+        width: 65.5%;
+        height: 100%;
+        box-sizing: border-box;
+        padding: clamp(14px, 2.6vw, 26px) clamp(16px, 2.8vw, 28px) clamp(14px, 2.2vw, 22px) clamp(18px, 3.2vw, 32px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .ticket-part.ticket-right {
+        width: 34.5%;
+        height: 100%;
+        box-sizing: border-box;
+        padding: clamp(14px, 2.6vw, 26px) clamp(12px, 2vw, 20px) clamp(14px, 2.2vw, 22px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        text-align: center;
+      }
+
+      .ticket-serial {
+        font-family: 'Michroma', sans-serif;
+        font-size: clamp(8px, 1vw, 13px);
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #ffffff;
+      }
+
+      .ticket-pass-badge {
+        font-size: clamp(7.5px, 0.85vw, 11px);
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        color: #ffffff;
+      }
+
+      .ticket-meta-label {
+        font-size: clamp(6.5px, 0.72vw, 9px);
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: rgba(255, 255, 255, 0.75);
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      .ticket-event-val {
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(11px, 1.4vw, 17px);
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+        line-height: 1.2;
+        letter-spacing: 0.5px;
+      }
+
+      .ticket-meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(4px, 0.8vw, 12px);
+      }
+
+      .ticket-meta-item.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .ticket-meta-val {
+        font-size: clamp(9px, 1.15vw, 14px);
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.2;
+        text-transform: uppercase;
+        word-break: break-word;
+      }
+
+      .stub-badge {
+        font-family: 'Michroma', sans-serif;
+        font-size: clamp(8px, 1vw, 12px);
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 1px;
+      }
+
+      .stub-field {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+
+      .stub-val {
+        font-size: clamp(8.5px, 1.05vw, 13px);
+        font-weight: 700;
+        color: #ffffff;
+        text-transform: uppercase;
+        line-height: 1.2;
+      }
+
+      .stub-no {
+        font-family: 'Michroma', sans-serif;
+        font-size: clamp(8px, 0.95vw, 12px);
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 1px;
+      }
     </style>
   </head>
   <body>
@@ -456,6 +626,7 @@
       </div>
       <button class="ans-btn" id="ans-btn">Oh, i dont have it!</button>
       <div class="flork-options" id="flork-options">
+        <button class="flork-opt-btn" type="button" id="flork-opt-view-ticket" data-action="view-ticket" style="display: none;">Show my ticket</button>
         <button class="flork-opt-btn" type="button" data-action="ticket">I need a ticket</button>
         <button class="flork-opt-btn" type="button" data-action="who">Who are you?</button>
         <button class="flork-opt-btn" type="button" data-action="rest">We have only this? where is rest?</button>
@@ -510,6 +681,49 @@
           </div>
         </div>
       </div>
+      <div class="issued-ticket-overlay" id="issued-ticket-overlay">
+        <div class="cinema-ticket-card">
+          <button type="button" class="ticket-view-close" id="ticket-view-close" aria-label="Close Ticket">&times;</button>
+          <div class="cinema-ticket-stub">
+            <div class="ticket-part ticket-left">
+              <div class="ticket-header-row">
+                <span class="ticket-serial" id="view-ticket-no">NO. AC-82237</span>
+                <span class="ticket-pass-badge">&#9733; ADMIT ONE &#9733;</span>
+              </div>
+              <div class="ticket-title-row">
+                <span class="ticket-meta-label">EVENT</span>
+                <h3 class="ticket-event-val" id="view-ticket-event">HACK CLUB FILM FANTASIA</h3>
+              </div>
+              <div class="ticket-meta-grid">
+                <div class="ticket-meta-item">
+                  <span class="ticket-meta-label">PASSHOLDER</span>
+                  <span class="ticket-meta-val" id="view-ticket-name">GUEST ANIMATOR</span>
+                </div>
+                <div class="ticket-meta-item">
+                  <span class="ticket-meta-label">TICKET TYPE</span>
+                  <span class="ticket-meta-val" id="view-ticket-type">SINGLE ROOM PASS</span>
+                </div>
+                <div class="ticket-meta-item full-width">
+                  <span class="ticket-meta-label">ADMITTANCE</span>
+                  <span class="ticket-meta-val" id="view-ticket-admittance">VALID FOR 1 ROOM CREATION</span>
+                </div>
+              </div>
+            </div>
+            <div class="ticket-part ticket-right">
+              <div class="stub-badge">ABSOLUTE CINEMA</div>
+              <div class="stub-field">
+                <span class="ticket-meta-label">PASSHOLDER</span>
+                <span class="stub-val" id="stub-ticket-name">GUEST ANIMATOR</span>
+              </div>
+              <div class="stub-field">
+                <span class="ticket-meta-label">PASS</span>
+                <span class="stub-val" id="stub-ticket-type">SINGLE ROOM</span>
+              </div>
+              <div class="stub-no" id="stub-ticket-no">AC-82237</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <script>
       const s = new URLSearchParams(window.location.search).get('session');
@@ -535,6 +749,16 @@
       const ticketAdmittance = document.getElementById('ticket-admittance');
       const giveToFlorkBtn = document.getElementById('give-to-flork-btn');
 
+      const issuedOverlay = document.getElementById('issued-ticket-overlay');
+      const ticketCloseViewBtn = document.getElementById('ticket-view-close');
+      const viewTicketNo = document.getElementById('view-ticket-no');
+      const viewTicketName = document.getElementById('view-ticket-name');
+      const viewTicketType = document.getElementById('view-ticket-type');
+      const viewTicketAdmittance = document.getElementById('view-ticket-admittance');
+      const stubTicketName = document.getElementById('stub-ticket-name');
+      const stubTicketType = document.getElementById('stub-ticket-type');
+      const stubTicketNo = document.getElementById('stub-ticket-no');
+
       let state = 'awake';
       let sleepTimer = null;
       let actionTimer = null;
@@ -546,6 +770,47 @@
       new Image().src = 'assets/flork-see-right.png';
       new Image().src = 'assets/flork-ticket-still.png';
       new Image().src = 'assets/ticket-total.png';
+      new Image().src = 'assets/ticket.png';
+
+      function showIssuedTicket(ticketData) {
+        ticketData = ticketData || {};
+        const no = ticketData.ticket_no || localStorage.getItem('cinema_ticket_no') || 'AC-82237';
+        const type = ticketData.ticket_type || localStorage.getItem('cinema_ticket_type') || (ticketType ? ticketType.value : 'single room pass');
+        const name = (ticketData.attendee_name || localStorage.getItem('cinema_ticket_name') || (ticketName ? ticketName.value : 'GUEST ANIMATOR')).toUpperCase();
+        const typeCfg = TICKET_TYPES[type];
+        const admittance = typeCfg ? typeCfg.admittance : 'VALID FOR SCREENING ENTRY';
+
+        if (viewTicketNo) viewTicketNo.textContent = 'NO. ' + no;
+        if (viewTicketName) viewTicketName.textContent = name;
+        if (viewTicketType) viewTicketType.textContent = type.toUpperCase();
+        if (viewTicketAdmittance) viewTicketAdmittance.textContent = admittance;
+
+        if (stubTicketName) stubTicketName.textContent = name.length > 15 ? name.slice(0, 13) + '..' : name;
+        if (stubTicketType) stubTicketType.textContent = type.toUpperCase().replace(' PASS', '');
+        if (stubTicketNo) stubTicketNo.textContent = no;
+
+        if (issuedOverlay) issuedOverlay.classList.add('active');
+      }
+
+      function hideIssuedTicket() {
+        if (issuedOverlay) issuedOverlay.classList.remove('active');
+      }
+
+      if (ticketCloseViewBtn) {
+        ticketCloseViewBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          hideIssuedTicket();
+        });
+      }
+
+      if (issuedOverlay) {
+        issuedOverlay.addEventListener('click', (e) => {
+          if (e.target === issuedOverlay) {
+            hideIssuedTicket();
+          }
+        });
+      }
 
       function typeText(str, onDone) {
         if (typeTimer) {
@@ -687,10 +952,17 @@
           vid.style.display = 'none';
         }
         if (ticketOverlay) ticketOverlay.classList.remove('active');
+        if (issuedOverlay) issuedOverlay.classList.remove('active');
         state = 'helping';
         hideBubble();
         img.src = 'assets/dashboard-flork.png';
         if (bubble) bubble.classList.add('active');
+
+        const viewTicketBtn = document.getElementById('flork-opt-view-ticket');
+        if (viewTicketBtn) {
+          viewTicketBtn.style.display = hasActiveTicket ? 'block' : 'none';
+        }
+
         typeText('how may i help you today?', () => {
           if (florkOptions) florkOptions.classList.add('active');
         });
@@ -734,7 +1006,13 @@
         btn.addEventListener('click', (e) => {
           e.preventDefault();
           const action = btn.getAttribute('data-action');
-          if (action === 'who') {
+          if (action === 'view-ticket') {
+            if (florkOptions) florkOptions.classList.remove('active');
+            state = 'helping';
+            hideBubble();
+            img.src = 'assets/flork-ticket-still.png';
+            showIssuedTicket();
+          } else if (action === 'who') {
             if (florkOptions) florkOptions.classList.remove('active');
             state = 'helping';
             img.src = 'assets/flork-happy.png';
@@ -983,6 +1261,7 @@
               localStorage.setItem('cinema_ticket_no', resData.ticket.ticket_no);
             }
             img.src = 'assets/flork-ticket-still.png';
+            showIssuedTicket(savedTicket);
             typeText("Here is your ticket! You can now step through the green doors.", () => {
               if (state === 'helping') {
                 setTimeout(() => {
@@ -1020,12 +1299,18 @@
 
       document.addEventListener('click', (e) => {
         if (state !== 'helping' && state !== 'ending_question') return;
+        if (issuedOverlay && issuedOverlay.classList.contains('active')) {
+          const card = issuedOverlay.querySelector('.cinema-ticket-card');
+          if (card && card.contains(e.target)) return;
+          hideIssuedTicket();
+          return;
+        }
         if (ticketOverlay && ticketOverlay.classList.contains('active')) {
           if (ticketOverlay.contains(e.target)) return;
           closeTicket();
           return;
         }
-        if (e.target.closest && (e.target.closest('#give-to-flork-btn') || e.target.closest('#ticket-overlay'))) return;
+        if (e.target.closest && (e.target.closest('#give-to-flork-btn') || e.target.closest('#ticket-overlay') || e.target.closest('#issued-ticket-overlay'))) return;
         if (florkOptions && florkOptions.contains(e.target)) return;
         if (florkBtn && florkBtn.contains(e.target)) return;
         if (doorBtn && doorBtn.contains(e.target)) return;
