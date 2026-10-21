@@ -90,6 +90,7 @@ if (!token) {
           token = userData.sessionId;
         }
         window.currentUser = userData;
+        try { localStorage.setItem('cinema_user', JSON.stringify(userData)); } catch (_) {}
         const isAdmin = checkIsAdminUser(userData);
         window.userRole = userData.role || (isAdmin ? "admin" : "participant");
 
@@ -137,6 +138,7 @@ if (!token) {
     const isAdmin = checkIsAdminUser(userData);
     const role = userData.role || (isAdmin ? "admin" : "participant");
     window.currentUser = userData;
+    try { localStorage.setItem('cinema_user', JSON.stringify(userData)); } catch (_) {}
     window.userRole = role;
 
     if (isProtectedPage) {

@@ -309,6 +309,55 @@
         line-height: 1.25;
       }
 
+      .ticket-select,
+      .ticket-input {
+        font-family: 'Poppins', sans-serif;
+        font-size: clamp(11px, 1.25vw, 15px);
+        font-weight: 700;
+        color: #000;
+        background: #fff;
+        border: 2px solid #000;
+        border-radius: 4px;
+        padding: clamp(4px, 0.5vw, 6px) clamp(6px, 0.8vw, 10px);
+        outline: none;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+        box-shadow: none;
+        transition: background 0.15s ease, border-color 0.15s ease;
+      }
+
+      .ticket-select {
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%3E%3Cpath%20d%3D%22M1%201l5%205%205-5%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right clamp(8px, 1vw, 12px) center;
+        padding-right: clamp(24px, 2.5vw, 32px);
+        cursor: pointer;
+      }
+
+      .ticket-select:focus,
+      .ticket-input:focus {
+        background: #f7f7f7;
+        border-color: #000;
+      }
+
+      .ticket-select option:disabled {
+        color: #888;
+        background: #f0f0f0;
+      }
+
+      .ticket-type-desc {
+        font-size: clamp(8px, 0.82vw, 10px);
+        color: #555;
+        font-weight: 500;
+        line-height: 1.25;
+        margin-top: 3px;
+        min-height: clamp(16px, 1.8vw, 22px);
+        display: block;
+      }
+
       .ticket-footer {
         display: flex;
         align-items: center;
@@ -421,36 +470,33 @@
       </a>
       <div class="ticket-overlay" id="ticket-overlay">
         <div class="ticket-top">
-          <div class="ticket-badge">ABSOLUTE CINEMA • PREMIERE PASS</div>
-          <div class="ticket-no">NO. 00842-AC</div>
+          <div class="ticket-badge">Userdata form</div>
         </div>
         <div class="ticket-main-grid">
           <div class="ticket-col">
             <div class="ticket-field">
-              <span class="ticket-label">ATTENDEE / CREATOR</span>
-              <span class="ticket-val" id="ticket-name">GUEST ANIMATOR</span>
+              <span class="ticket-label">Ticket type</span>
+              <select class="ticket-select" id="ticket-type">
+                <option value="all access pass">ALL ACCESS PASS [Admin • Free]</option>
+                <option value="judge pass">JUDGE PASS [Admin & Reviewer • Free]</option>
+                <option value="single room pass">SINGLE ROOM PASS [Make a Room • Free]</option>
+                <option value="all rooms pass">ALL ROOMS PASS [View Creations • 1 Film Required]</option>
+              </select>
+              <span class="ticket-type-desc" id="ticket-type-desc"></span>
             </div>
             <div class="ticket-field">
               <span class="ticket-label">EVENT</span>
               <span class="ticket-val">HACK CLUB FILM FANTASIA</span>
             </div>
-            <div class="ticket-field">
-              <span class="ticket-label">PREMIERE VENUE</span>
-              <span class="ticket-val">AUDITORIUM A • MAIN STAGE</span>
-            </div>
           </div>
           <div class="ticket-col">
             <div class="ticket-field">
-              <span class="ticket-label">ACCESS LEVEL</span>
-              <span class="ticket-val">ALL-ACCESS FILMMAKER PASS</span>
-            </div>
-            <div class="ticket-field">
-              <span class="ticket-label">SEAT ALLOCATION</span>
-              <span class="ticket-val">ROW 1 • SEAT 07</span>
+              <span class="ticket-label">name</span>
+              <input type="text" class="ticket-input" id="ticket-name" placeholder="Name on ticket" value="GUEST ANIMATOR" autocomplete="off">
             </div>
             <div class="ticket-field">
               <span class="ticket-label">ADMITTANCE</span>
-              <span class="ticket-val">VALID FOR SCREENING ENTRY</span>
+              <span class="ticket-val" id="ticket-admittance">VALID FOR SCREENING ENTRY</span>
             </div>
           </div>
         </div>
@@ -460,8 +506,7 @@
             <span class="barcode-text">* ABSOLUTE-CINEMA-YSWS-2026 *</span>
           </div>
           <div class="ticket-actions">
-            <button type="button" class="ticket-close-btn" id="ticket-close-btn">Return to Lobby</button>
-            <a href="rooms.html" class="ticket-action-btn">Enter Screening Hall &rarr;</a>
+            <button type="button" class="ticket-action-btn" id="give-to-flork-btn">Give to Flork</button>
           </div>
         </div>
       </div>
@@ -484,8 +529,11 @@
       const florkOptBtns = document.querySelectorAll('.flork-opt-btn');
 
       const ticketOverlay = document.getElementById('ticket-overlay');
-      const ticketCloseBtn = document.getElementById('ticket-close-btn');
       const ticketName = document.getElementById('ticket-name');
+      const ticketType = document.getElementById('ticket-type');
+      const ticketDesc = document.getElementById('ticket-type-desc');
+      const ticketAdmittance = document.getElementById('ticket-admittance');
+      const giveToFlorkBtn = document.getElementById('give-to-flork-btn');
 
       let state = 'awake';
       let sleepTimer = null;
@@ -733,23 +781,186 @@
         scheduleNext(true);
       }
 
-      if (ticketCloseBtn) {
-        ticketCloseBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          closeTicket();
-        });
+      const TICKET_TYPES = {
+        'all access pass': {
+          label: 'ALL ACCESS PASS [Admin • Free]',
+          lockedLabel: 'ALL ACCESS PASS [Admin Only]',
+          cost: 'FREE',
+          admittance: 'FULL ADMIN & SCREENING ACCESS • FREE',
+          desc: 'All-access pass for administrators to manage rooms and screenings.',
+          allowed: (isAdmin, isReviewer, hasFilm) => isAdmin
+        },
+        'judge pass': {
+          label: 'JUDGE PASS [Admin & Reviewer • Free]',
+          lockedLabel: 'JUDGE PASS [Admin & Reviewer Only]',
+          cost: 'FREE',
+          admittance: 'JURY SCREENING & REVIEW ACCESS • FREE',
+          desc: 'Judge pass for reviewing entries and attending screenings.',
+          allowed: (isAdmin, isReviewer, hasFilm) => isReviewer || isAdmin
+        },
+        'single room pass': {
+          label: 'SINGLE ROOM PASS [Make a Room • Free]',
+          lockedLabel: 'SINGLE ROOM PASS [Make a Room • Free]',
+          cost: 'FREE',
+          admittance: 'VALID FOR 1 ROOM CREATION • FREE',
+          desc: 'Pass for creators to build and host their custom screening room.',
+          allowed: () => true
+        },
+        'all rooms pass': {
+          label: 'ALL ROOMS PASS [View Creations • 1 Film Required]',
+          lockedLabel: 'ALL ROOMS PASS [1 Film Required]',
+          cost: '1 SUBMITTED FILM',
+          admittance: 'ALL CREATOR ROOMS ACCESS • 1 FILM REQUIRED',
+          desc: 'Grants access to explore all creations. Requires at least 1 submitted film.',
+          allowed: (isAdmin, isReviewer, hasFilm) => Boolean(hasFilm || isAdmin)
+        }
+      };
+
+      let hasSubmittedFilm = false;
+      let currentUser = {};
+
+      function updateTicketUI(typeKey) {
+        const config = TICKET_TYPES[typeKey] || TICKET_TYPES['single room pass'];
+        if (ticketType && ticketType.value !== typeKey) {
+          ticketType.value = typeKey;
+        }
+        if (ticketAdmittance) {
+          ticketAdmittance.textContent = config.admittance;
+        }
+        if (ticketDesc) {
+          ticketDesc.style.color = '#555';
+          ticketDesc.textContent = config.desc;
+        }
+        try {
+          localStorage.setItem('cinema_ticket_type', typeKey);
+        } catch (_) {}
+      }
+
+      function configureTicketOptions(user) {
+        user = user || {};
+        currentUser = user;
+        const isAdmin = Boolean(user.isAdmin || user.is_admin === 1 || user.role === 'admin');
+        const isReviewer = Boolean(user.isReviewer || user.role === 'reviewer' || isAdmin);
+
+        let savedType = localStorage.getItem('cinema_ticket_type');
+        let fallbackType = isAdmin ? 'all access pass' : (isReviewer ? 'judge pass' : 'single room pass');
+
+        if (ticketType) {
+          Array.from(ticketType.options).forEach((opt) => {
+            const key = opt.value;
+            const cfg = TICKET_TYPES[key];
+            if (!cfg) return;
+            const isAllowed = cfg.allowed(isAdmin, isReviewer, hasSubmittedFilm);
+            opt.disabled = !isAllowed;
+            opt.textContent = isAllowed ? cfg.label : cfg.lockedLabel;
+          });
+
+          if (!savedType || !TICKET_TYPES[savedType] || !TICKET_TYPES[savedType].allowed(isAdmin, isReviewer, hasSubmittedFilm)) {
+            savedType = fallbackType;
+          }
+
+          updateTicketUI(savedType);
+        }
+
+        if (ticketName) {
+          const savedName = localStorage.getItem('cinema_ticket_name');
+          if (savedName) {
+            ticketName.value = savedName;
+          } else if (user.name || user.email) {
+            const name = user.name || (user.email ? user.email.split('@')[0] : '');
+            ticketName.value = name.toUpperCase();
+          }
+        }
       }
 
       try {
-        const savedUser = localStorage.getItem('cinema_user');
-        if (savedUser) {
-          const u = JSON.parse(savedUser);
-          const name = u.name || (u.email ? u.email.split('@')[0] : '');
-          if (name && ticketName) {
-            ticketName.textContent = name.toUpperCase();
+        currentUser = JSON.parse(localStorage.getItem('cinema_user') || '{}');
+        hasSubmittedFilm = localStorage.getItem('cinema_has_submitted_film') === 'true';
+      } catch (_) {}
+      configureTicketOptions(currentUser);
+
+      async function syncUserSession() {
+        const token = localStorage.getItem('cinema_session');
+        if (!token) return;
+        try {
+          const [meRes, projRes] = await Promise.all([
+            fetch("https://cinema-hall.hackclub.app/api/me", {
+              headers: { "Authorization": `Bearer ${token}` }
+            }),
+            fetch("https://cinema-hall.hackclub.app/api/my-projects", {
+              headers: { "Authorization": `Bearer ${token}` }
+            })
+          ]);
+
+          let userData = null;
+          if (meRes.ok) {
+            userData = await meRes.json();
+            currentUser = userData;
+            try { localStorage.setItem('cinema_user', JSON.stringify(userData)); } catch (_) {}
           }
-        }
-      } catch (err) {}
+
+          if (projRes.ok) {
+            try {
+              const projects = await projRes.json();
+              if (Array.isArray(projects)) {
+                hasSubmittedFilm = projects.some(p => p.status === 'submitted' || p.status === 'approved' || p.status === 'reviewed' || p.status === 'design');
+                try { localStorage.setItem('cinema_has_submitted_film', hasSubmittedFilm ? 'true' : 'false'); } catch (_) {}
+              }
+            } catch (_) {}
+          }
+
+          if (userData) {
+            configureTicketOptions(userData);
+          }
+        } catch (_) {}
+      }
+      syncUserSession();
+
+      function giveToFlork() {
+        const selectedType = ticketType ? ticketType.value : 'single room pass';
+
+        if (ticketType) localStorage.setItem('cinema_ticket_type', selectedType);
+        if (ticketName) localStorage.setItem('cinema_ticket_name', ticketName.value);
+
+        if (ticketOverlay) ticketOverlay.classList.remove('active');
+        state = 'helping';
+        hideBubble();
+        img.src = 'assets/flork-happy.png';
+        if (bubble) bubble.classList.add('active');
+
+        typeText("Ok, wait a bit", () => {
+          if (state === 'helping') {
+            img.src = 'assets/flork-happy-hand-down.png';
+            setTimeout(() => {
+              if (state === 'helping') {
+                hideBubble();
+                img.src = 'assets/dashboard-flork.png';
+                state = 'awake';
+                scheduleNext(true);
+              }
+            }, 3000);
+          }
+        });
+      }
+
+      if (giveToFlorkBtn) {
+        giveToFlorkBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          giveToFlork();
+        });
+      }
+
+      if (ticketName) {
+        ticketName.addEventListener('input', () => {
+          localStorage.setItem('cinema_ticket_name', ticketName.value);
+        });
+      }
+      if (ticketType) {
+        ticketType.addEventListener('change', () => {
+          updateTicketUI(ticketType.value);
+        });
+      }
 
       document.addEventListener('click', (e) => {
         if (state !== 'helping') return;
@@ -758,6 +969,7 @@
           closeTicket();
           return;
         }
+        if (e.target.closest && (e.target.closest('#give-to-flork-btn') || e.target.closest('#ticket-overlay'))) return;
         if (florkOptions && florkOptions.contains(e.target)) return;
         if (florkBtn && florkBtn.contains(e.target)) return;
         if (doorBtn && doorBtn.contains(e.target)) return;
