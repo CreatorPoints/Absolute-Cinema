@@ -636,7 +636,7 @@
       <a href="index.html" class="nav-arrow-left" title="Back to Home" aria-label="Back to Home">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
       </a>
-      <a href="rooms.html" class="nav-arrow-right" title="Screening Rooms (/rooms)" aria-label="Screening Rooms">
+      <a href="#" class="nav-arrow-right" id="nav-arrow-right" title="Right lobby area" aria-label="Right lobby area">
         <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
       </a>
       <div class="ticket-overlay" id="ticket-overlay">
@@ -736,6 +736,7 @@
       const vid = document.getElementById('flork-anim');
       const florkBtn = document.getElementById('hotspot-flork');
       const doorBtn = document.getElementById('hotspot-door');
+      const rightArrowBtn = document.getElementById('nav-arrow-right');
       const bubble = document.getElementById('flork-bubble');
       const bubbleText = document.querySelector('.bubble-text');
       const ansBtn = document.getElementById('ans-btn');
@@ -978,6 +979,46 @@
           } else {
             askTicket();
           }
+        });
+      }
+
+      if (rightArrowBtn) {
+        rightArrowBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
+          if (sleepTimer) {
+            clearTimeout(sleepTimer);
+            sleepTimer = null;
+          }
+          if (actionTimer) {
+            clearTimeout(actionTimer);
+            actionTimer = null;
+          }
+          if (vid) {
+            vid.pause();
+            vid.style.display = 'none';
+          }
+          if (ticketOverlay) ticketOverlay.classList.remove('active');
+          if (issuedOverlay) issuedOverlay.classList.remove('active');
+          if (florkOptions) florkOptions.classList.remove('active');
+          if (ansBtn) ansBtn.classList.remove('active');
+
+          state = 'helping';
+          hideBubble();
+          img.src = 'assets/flork-see-right.png';
+          if (bubble) bubble.classList.add('active');
+
+          typeText('that part is still being constructed', () => {
+            setTimeout(() => {
+              if (state === 'helping') {
+                hideBubble();
+                img.src = 'assets/dashboard-flork.png';
+                state = 'awake';
+                scheduleNext(true);
+              }
+            }, 2500);
+          });
         });
       }
 
