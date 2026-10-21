@@ -1019,7 +1019,7 @@
       }
 
       document.addEventListener('click', (e) => {
-        if (state !== 'helping') return;
+        if (state !== 'helping' && state !== 'ending_question') return;
         if (ticketOverlay && ticketOverlay.classList.contains('active')) {
           if (ticketOverlay.contains(e.target)) return;
           closeTicket();
@@ -1039,8 +1039,19 @@
       if (ansBtn) {
         ansBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          hideBubble();
-          askHelp();
+          e.stopPropagation();
+          if (ansBtn) ansBtn.classList.remove('active');
+          state = 'ending_question';
+          typeText('you need a ticket to go in there...', () => {
+            setTimeout(() => {
+              if (state === 'ending_question') {
+                hideBubble();
+                img.src = 'assets/dashboard-flork.png';
+                state = 'awake';
+                scheduleNext(true);
+              }
+            }, 2500);
+          });
         });
       }
 
