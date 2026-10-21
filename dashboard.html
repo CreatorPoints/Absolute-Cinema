@@ -696,10 +696,16 @@
         });
       }
 
+      let hasActiveTicket = localStorage.getItem('cinema_has_active_ticket') === 'true';
+
       if (doorBtn) {
         doorBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          askTicket();
+          if (hasActiveTicket) {
+            window.location.href = 'rooms.html';
+          } else {
+            askTicket();
+          }
         });
       }
 
@@ -883,11 +889,14 @@
         const token = localStorage.getItem('cinema_session');
         if (!token) return;
         try {
-          const [meRes, projRes] = await Promise.all([
+          const [meRes, projRes, ticketRes] = await Promise.all([
             fetch("https://cinema-hall.hackclub.app/api/me", {
               headers: { "Authorization": `Bearer ${token}` }
             }),
             fetch("https://cinema-hall.hackclub.app/api/my-projects", {
+              headers: { "Authorization": `Bearer ${token}` }
+            }),
+            fetch("https://cinema-hall.hackclub.app/api/ticket", {
               headers: { "Authorization": `Bearer ${token}` }
             })
           ]);
@@ -909,6 +918,25 @@
             } catch (_) {}
           }
 
+          if (ticketRes.ok) {
+            try {
+              const ticketData = await ticketRes.json();
+              if (ticketData && ticketData.hasTicket && ticketData.ticket) {
+                hasActiveTicket = true;
+                localStorage.setItem('cinema_has_active_ticket', 'true');
+                if (ticketData.ticket.ticket_type) {
+                  localStorage.setItem('cinema_ticket_type', ticketData.ticket.ticket_type);
+                  if (ticketType) ticketType.value = ticketData.ticket.ticket_type;
+                  updateTicketUI(ticketData.ticket.ticket_type);
+                }
+                if (ticketData.ticket.attendee_name) {
+                  localStorage.setItem('cinema_ticket_name', ticketData.ticket.attendee_name);
+                  if (ticketName) ticketName.value = ticketData.ticket.attendee_name;
+                }
+              }
+            } catch (_) {}
+          }
+
           if (userData) {
             configureTicketOptions(userData);
           }
@@ -918,9 +946,10 @@
 
       function giveToFlork() {
         const selectedType = ticketType ? ticketType.value : 'single room pass';
+        const nameVal = ticketName && ticketName.value.trim() ? ticketName.value.trim() : 'GUEST ANIMATOR';
 
         if (ticketType) localStorage.setItem('cinema_ticket_type', selectedType);
-        if (ticketName) localStorage.setItem('cinema_ticket_name', ticketName.value);
+        if (ticketName) localStorage.setItem('cinema_ticket_name', nameVal);
 
         if (ticketOverlay) ticketOverlay.classList.remove('active');
         state = 'helping';
@@ -928,18 +957,45 @@
         img.src = 'assets/flork-happy.png';
         if (bubble) bubble.classList.add('active');
 
-        typeText("Ok, wait a bit", () => {
-          if (state === 'helping') {
-            img.src = 'assets/flork-happy-hand-down.png';
-            setTimeout(() => {
+        const token = localStorage.getItem('cinema_session');
+        const saveTicketPromise = token
+          ? fetch("https://cinema-hall.hackclub.app/api/ticket", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                ticket_type: selectedType,
+                attendee_name: nameVal
+              })
+            }).then(r => r.json()).catch(() => null)
+          : Promise.resolve(null);
+
+        const minDelayPromise = new Promise((resolve) => setTimeout(resolve, 1400));
+
+        typeText("Wait a minute...", () => {
+          Promise.all([saveTicketPromise, minDelayPromise]).then(([resData]) => {
+            if (state !== 'helping') return;
+            hasActiveTicket = true;
+            localStorage.setItem('cinema_has_active_ticket', 'true');
+            if (resData && resData.ticket && resData.ticket.ticket_no) {
+              localStorage.setItem('cinema_ticket_no', resData.ticket.ticket_no);
+            }
+            img.src = 'assets/flork-ticket-still.png';
+            typeText("Here is your ticket! You can now step through the green doors.", () => {
               if (state === 'helping') {
-                hideBubble();
-                img.src = 'assets/dashboard-flork.png';
-                state = 'awake';
-                scheduleNext(true);
+                setTimeout(() => {
+                  if (state === 'helping') {
+                    hideBubble();
+                    img.src = 'assets/dashboard-flork.png';
+                    state = 'awake';
+                    scheduleNext(true);
+                  }
+                }, 4000);
               }
-            }, 3000);
-          }
+            });
+          });
         });
       }
 
@@ -984,8 +1040,7 @@
         ansBtn.addEventListener('click', (e) => {
           e.preventDefault();
           hideBubble();
-          state = 'awake';
-          scheduleNext(true);
+          askHelp();
         });
       }
 

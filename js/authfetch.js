@@ -86,8 +86,21 @@ if (!token) {
         }
         window.currentUser = userData;
         try { localStorage.setItem('cinema_user', JSON.stringify(userData)); } catch (_) {}
+        if (userData.hasTicket) {
+          localStorage.setItem('cinema_has_active_ticket', 'true');
+          if (userData.ticket) {
+            if (userData.ticket.ticket_type) localStorage.setItem('cinema_ticket_type', userData.ticket.ticket_type);
+            if (userData.ticket.attendee_name) localStorage.setItem('cinema_ticket_name', userData.ticket.attendee_name);
+            if (userData.ticket.ticket_no) localStorage.setItem('cinema_ticket_no', userData.ticket.ticket_no);
+          }
+        }
         const isAdmin = checkIsAdminUser(userData);
         window.userRole = userData.role || (isAdmin ? "admin" : "participant");
+
+        if (isRooms && !userData.hasTicket && localStorage.getItem('cinema_has_active_ticket') !== 'true' && !isLocalhost) {
+          window.location.replace(window.location.protocol === 'file:' ? 'dashboard.html' : '/dashboard.html');
+          return;
+        }
 
         if (isProtectedPage) {
           document.body.classList.remove('auth-pending');
@@ -130,7 +143,20 @@ if (!token) {
     const role = userData.role || (isAdmin ? "admin" : "participant");
     window.currentUser = userData;
     try { localStorage.setItem('cinema_user', JSON.stringify(userData)); } catch (_) {}
+    if (userData.hasTicket) {
+      localStorage.setItem('cinema_has_active_ticket', 'true');
+      if (userData.ticket) {
+        if (userData.ticket.ticket_type) localStorage.setItem('cinema_ticket_type', userData.ticket.ticket_type);
+        if (userData.ticket.attendee_name) localStorage.setItem('cinema_ticket_name', userData.ticket.attendee_name);
+        if (userData.ticket.ticket_no) localStorage.setItem('cinema_ticket_no', userData.ticket.ticket_no);
+      }
+    }
     window.userRole = role;
+
+    if (isRooms && !userData.hasTicket && localStorage.getItem('cinema_has_active_ticket') !== 'true' && !isLocalhost) {
+      window.location.replace(window.location.protocol === 'file:' ? 'dashboard.html' : '/dashboard.html');
+      return;
+    }
 
     if (isProtectedPage) {
       document.body.classList.remove('auth-pending');
