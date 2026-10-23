@@ -277,7 +277,7 @@ footer a:hover {
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  opacity: 0.07;
+  opacity: 0.08;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -287,12 +287,47 @@ footer a:hover {
   display: flex;
   width: 100%;
   overflow: hidden;
+  user-select: none;
 }
 
 .bg-marquee-content {
   display: flex;
   flex-shrink: 0;
   gap: 20px;
+  padding-right: 20px;
+  will-change: transform;
+}
+
+.marquee-left .bg-marquee-content {
+  animation: marqueeScrollLeft 55s linear infinite;
+}
+
+.marquee-right .bg-marquee-content {
+  animation: marqueeScrollRight 55s linear infinite;
+}
+
+@keyframes marqueeScrollLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes marqueeScrollRight {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-marquee-content {
+    animation-play-state: paused;
+  }
 }
 
 .bg-marquee-content img {
